@@ -33,7 +33,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { owner, name } = parsed.data;
+  const { owner: rawOwner, name: rawName } = parsed.data;
+
+  // Auto-detect full GitHub URL (e.g. https://github.com/dasouvik122005/Weblytix) or owner/repo format
+  let owner = rawOwner.trim();
+  let name = rawName.trim();
+
+  const combined = `${owner} ${name}`;
+  const urlMatch = combined.match(/github\.com[/:]([^/\s]+)\/([^/\s#?]+)/i);
+  if (urlMatch) {
+    owner = urlMatch[1];
+    name = urlMatch[2].replace(/\.git$/i, "");
+  } else if (name.includes("/")) {
+    const parts = name.split("/").map((p) => p.trim());
+    if (parts[0] && parts[1]) {
+      owner = parts[0];
+      name = parts[1].replace(/\.git$/i, "");
+    }
+  } else if (owner.includes("/")) {
+    const parts = owner.split("/").map((p) => p.trim());
+    if (parts[0] && parts[1]) {
+      owner = parts[0];
+      name = parts[1].replace(/\.git$/i, "");
+    }
+  }
 
   try {
     // Resolve user's stored OAuth token or fallback

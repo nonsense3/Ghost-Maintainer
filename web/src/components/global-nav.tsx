@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "@/components/logo";
 
 export function GlobalNav({ right }: { right?: React.ReactNode }) {
   const navLinks = [
@@ -12,10 +11,13 @@ export function GlobalNav({ right }: { right?: React.ReactNode }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/85 backdrop-blur-md border-b border-zinc-800/80">
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
-        {/* Logo */}
+        {/* Brand */}
         <Link href="/" className="flex items-center group">
-          <Logo />
+          <span className="text-xl font-bold tracking-tight text-white group-hover:text-zinc-200 transition-colors">
+            Ghost Maintainer
+          </span>
         </Link>
+
 
         {/* Navigation links */}
         <nav className="hidden md:flex items-center gap-1 lg:gap-2">

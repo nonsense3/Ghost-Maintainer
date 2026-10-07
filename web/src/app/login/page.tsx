@@ -2,7 +2,6 @@ export const instant = false;
 
 import Link from "next/link";
 import { LoginForm } from "./login-form";
-import { Logo } from "@/components/logo";
 
 export default async function LoginPage({
   searchParams,
@@ -15,8 +14,11 @@ export default async function LoginPage({
       {/* Header */}
       <header className="h-16 border-b border-zinc-800/80 bg-[#0A0A0A]/85 backdrop-blur-md flex items-center justify-between px-6 md:px-12">
         <Link href="/" className="flex items-center group">
-          <Logo />
+          <span className="text-xl font-bold tracking-tight text-white group-hover:text-zinc-200 transition-colors">
+            Ghost Maintainer
+          </span>
         </Link>
+
         <Link
           href="/"
           className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"

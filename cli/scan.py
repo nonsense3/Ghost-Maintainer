@@ -352,7 +352,7 @@ def main():
     p_scan.add_argument("target", help="owner/repo (e.g. pallets/flask)")
     p_scan.add_argument("--token", help="GitHub Personal Access Token")
     p_scan.add_argument("--ollama", default="http://127.0.0.1:11434", help="Ollama host URL")
-    p_scan.add_argument("--model", default="gemma2:9b", help="Gemma model name")
+    p_scan.add_argument("--model", default="gemma4:31b-cloud", help="Gemma model name (e.g. gemma4:31b-cloud, gemma4:e2b, gemma4:12b)")
 
     # scan-deps
     p_deps = subparsers.add_parser("scan-deps", help="Scan all dependencies in package.json or requirements.txt")

@@ -26,70 +26,87 @@ export async function scoreTextWithGemma(text: string): Promise<GemmaScore | nul
     };
   }
 
-  const { OLLAMA_HOST, GEMMA_MODEL, GEMMA_API_KEY, GEMMA_API_BASE_URL } =
+  const { OLLAMA_HOST, OLLAMA_API_KEY, GEMMA_MODEL, GEMMA_API_KEY, GEMMA_API_BASE_URL } =
     getServerEnv();
 
   if (GEMMA_API_KEY && GEMMA_API_BASE_URL) {
-    return scoreViaHttp(GEMMA_API_BASE_URL, GEMMA_API_KEY, trimmed);
+    return scoreViaHttp(GEMMA_API_BASE_URL, GEMMA_API_KEY, GEMMA_MODEL, trimmed);
   }
 
-  return scoreViaOllama(OLLAMA_HOST, GEMMA_MODEL, trimmed);
+  return scoreViaOllama(OLLAMA_HOST, GEMMA_MODEL, trimmed, OLLAMA_API_KEY);
 }
 
 async function scoreViaOllama(
   host: string,
   model: string,
   text: string,
+  apiKey?: string,
 ): Promise<GemmaScore | null> {
-  const res = await fetch(`${host}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      stream: false,
-      format: "json",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: text.slice(0, 8000) },
-      ],
-    }),
-  });
+  try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (apiKey) {
+      headers["Authorization"] = `Bearer ${apiKey}`;
+    }
 
-  if (!res.ok) {
+    const res = await fetch(`${host.replace(/\/$/, "")}/api/chat`, {
+      method: "POST",
+      headers,
+      signal: AbortSignal.timeout(60000),
+      body: JSON.stringify({
+        model,
+        stream: false,
+        format: "json",
+        options: {
+          temperature: 0.1,
+        },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: text.slice(0, 8000) },
+        ],
+      }),
+    });
+
+    if (!res.ok) return null;
+
+    const data = (await res.json()) as {
+      message?: { content?: string };
+    };
+    return parseModelJson(data.message?.content ?? "");
+  } catch {
     return null;
   }
-
-  const data = (await res.json()) as {
-    message?: { content?: string };
-  };
-  return parseModelJson(data.message?.content ?? "");
 }
 
 async function scoreViaHttp(
   baseUrl: string,
   apiKey: string,
+  model: string,
   text: string,
 ): Promise<GemmaScore | null> {
-  const res = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "gemma",
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: text.slice(0, 8000) },
-      ],
-    }),
-  });
-  if (!res.ok) return null;
-  const data = (await res.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-  return parseModelJson(data.choices?.[0]?.message?.content ?? "");
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: model || "gemma2-9b-it",
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: text.slice(0, 8000) },
+        ],
+      }),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    return parseModelJson(data.choices?.[0]?.message?.content ?? "");
+  } catch {
+    return null;
+  }
 }
 
 function parseModelJson(raw: string): GemmaScore | null {

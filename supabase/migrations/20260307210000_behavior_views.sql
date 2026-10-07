@@ -1,7 +1,16 @@
 -- Ghost Maintainer — Migration: Behavioral Signal Views & Combined Risk Calculation
 
--- Step 0: Ensure github_events_flat has all required attributes
-CREATE OR REPLACE VIEW public.github_events_flat AS
+-- Drop dependent views cleanly to allow column schema updates in PostgreSQL
+DROP VIEW IF EXISTS public.view_combined_repository_risk CASCADE;
+DROP VIEW IF EXISTS public.view_signal_activity_drop CASCADE;
+DROP VIEW IF EXISTS public.view_signal_commit_time_shift CASCADE;
+DROP VIEW IF EXISTS public.view_signal_new_author_surge CASCADE;
+DROP VIEW IF EXISTS public.view_signal_unreviewed_merges CASCADE;
+DROP VIEW IF EXISTS public.view_signal_reply_latency_spike CASCADE;
+DROP VIEW IF EXISTS public.github_events_flat CASCADE;
+
+-- Step 1: Create normalized flatten view
+CREATE VIEW public.github_events_flat AS
 SELECT
     e.id AS event_id,
     e.repository_id,
@@ -37,7 +46,7 @@ SELECT
     e.payload
 FROM public.raw_github_events e;
 
-CREATE OR REPLACE VIEW public.view_signal_activity_drop AS
+CREATE VIEW public.view_signal_activity_drop AS
 WITH weekly_counts AS (
     SELECT
         repository_id,
@@ -74,7 +83,7 @@ SELECT
     ) AS detail
 FROM moving_averages;
 
-CREATE OR REPLACE VIEW public.view_signal_commit_time_shift AS
+CREATE VIEW public.view_signal_commit_time_shift AS
 WITH commit_hours AS (
     SELECT
         repository_id,
@@ -132,7 +141,7 @@ SELECT
     JSONB_BUILD_OBJECT('l1_distance', ROUND(COALESCE(l1_drift, 0)::numeric, 4)) AS detail
 FROM drift;
 
-CREATE OR REPLACE VIEW public.view_signal_new_author_surge AS
+CREATE VIEW public.view_signal_new_author_surge AS
 WITH author_first_commit AS (
     SELECT
         repository_id,
@@ -170,7 +179,7 @@ SELECT
 FROM recent_commits
 GROUP BY repository_id;
 
-CREATE OR REPLACE VIEW public.view_signal_unreviewed_merges AS
+CREATE VIEW public.view_signal_unreviewed_merges AS
 WITH recent_prs AS (
     SELECT
         repository_id,
@@ -200,7 +209,7 @@ SELECT
 FROM recent_prs
 GROUP BY repository_id;
 
-CREATE OR REPLACE VIEW public.view_signal_reply_latency_spike AS
+CREATE VIEW public.view_signal_reply_latency_spike AS
 WITH issue_first_replies AS (
     SELECT
         i.repository_id,

@@ -1,12 +1,21 @@
 -- ============================================================================
 -- 04_behavior_signals.sql — PRD §5: The 5 Behavioral Drift Signals in pure SQL
--- Self-contained script: creates/updates flatten view and all 5 signal views.
+-- Self-contained script: drops existing view schemas and creates all 5 signals.
 -- ============================================================================
 
+-- Drop dependent views cleanly to allow column schema updates in PostgreSQL
+DROP VIEW IF EXISTS public.view_combined_repository_risk CASCADE;
+DROP VIEW IF EXISTS public.view_signal_activity_drop CASCADE;
+DROP VIEW IF EXISTS public.view_signal_commit_time_shift CASCADE;
+DROP VIEW IF EXISTS public.view_signal_new_author_surge CASCADE;
+DROP VIEW IF EXISTS public.view_signal_unreviewed_merges CASCADE;
+DROP VIEW IF EXISTS public.view_signal_reply_latency_spike CASCADE;
+DROP VIEW IF EXISTS public.github_events_flat CASCADE;
+
 -- ----------------------------------------------------------------------------
--- STEP 0: ENSURE NORMALIZED FLATTEN VIEW IS UP TO DATE
+-- STEP 1: CREATE NORMALIZED FLATTEN VIEW
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.github_events_flat AS
+CREATE VIEW public.github_events_flat AS
 SELECT
     e.id AS event_id,
     e.repository_id,
@@ -45,7 +54,7 @@ FROM public.raw_github_events e;
 -- ----------------------------------------------------------------------------
 -- SIGNAL 1: ACTIVITY DROP (commits & reviews weekly count vs 90-day moving average)
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.view_signal_activity_drop AS
+CREATE VIEW public.view_signal_activity_drop AS
 WITH weekly_counts AS (
     SELECT
         repository_id,
@@ -85,7 +94,7 @@ FROM moving_averages;
 -- ----------------------------------------------------------------------------
 -- SIGNAL 2: COMMIT TIME SHIFT (Hour-of-day distribution drift: baseline vs recent)
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.view_signal_commit_time_shift AS
+CREATE VIEW public.view_signal_commit_time_shift AS
 WITH commit_hours AS (
     SELECT
         repository_id,
@@ -146,7 +155,7 @@ FROM drift;
 -- ----------------------------------------------------------------------------
 -- SIGNAL 3: NEW-AUTHOR SURGE (Authors first seen in last 30d weighted by commit volume)
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.view_signal_new_author_surge AS
+CREATE VIEW public.view_signal_new_author_surge AS
 WITH author_first_commit AS (
     SELECT
         repository_id,
@@ -187,7 +196,7 @@ GROUP BY repository_id;
 -- ----------------------------------------------------------------------------
 -- SIGNAL 4: UNREVIEWED MERGES (PRs merged without comments or approval)
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.view_signal_unreviewed_merges AS
+CREATE VIEW public.view_signal_unreviewed_merges AS
 WITH recent_prs AS (
     SELECT
         repository_id,
@@ -220,7 +229,7 @@ GROUP BY repository_id;
 -- ----------------------------------------------------------------------------
 -- SIGNAL 5: REPLY LATENCY SPIKE (Issue first reply delay moving average & Z-Score)
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.view_signal_reply_latency_spike AS
+CREATE VIEW public.view_signal_reply_latency_spike AS
 WITH issue_first_replies AS (
     SELECT
         i.repository_id,

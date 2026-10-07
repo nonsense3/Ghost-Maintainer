@@ -1,7 +1,46 @@
 -- ============================================================================
 -- 04_behavior_signals.sql — PRD §5: The 5 Behavioral Drift Signals in pure SQL
--- Implements window functions, moving averages, Z-scores, and distribution drift.
+-- Self-contained script: creates/updates flatten view and all 5 signal views.
 -- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- STEP 0: ENSURE NORMALIZED FLATTEN VIEW IS UP TO DATE
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE VIEW public.github_events_flat AS
+SELECT
+    e.id AS event_id,
+    e.repository_id,
+    e.source,
+    e.occurred_at,
+    DATE_TRUNC('week', e.occurred_at)::date AS week_start,
+    EXTRACT(HOUR FROM e.occurred_at)::integer AS hour_of_day,
+    CASE e.source
+        WHEN 'commit' THEN COALESCE(
+            e.payload #>> '{author,login}',
+            e.payload #>> '{commit,author,name}',
+            'anonymous'
+        )
+        ELSE COALESCE(e.payload #>> '{user,login}', 'anonymous')
+    END AS author,
+    CASE e.source
+        WHEN 'commit' THEN e.payload #>> '{commit,message}'
+        WHEN 'comment' THEN e.payload ->> 'body'
+        ELSE COALESCE(e.payload ->> 'body', e.payload ->> 'title')
+    END AS body,
+    CASE e.source
+        WHEN 'commit' THEN COALESCE((e.payload #>> '{stats,total}')::integer, 0)
+        ELSE 0
+    END AS lines_changed,
+    CASE e.source
+        WHEN 'pr' THEN (e.payload ->> 'merged_at') IS NOT NULL
+        ELSE FALSE
+    END AS is_merged,
+    CASE e.source
+        WHEN 'pr' THEN COALESCE((e.payload ->> 'review_comments')::integer, 0)
+        ELSE 0
+    END AS review_comments_count,
+    e.payload
+FROM public.raw_github_events e;
 
 -- ----------------------------------------------------------------------------
 -- SIGNAL 1: ACTIVITY DROP (commits & reviews weekly count vs 90-day moving average)
@@ -122,7 +161,6 @@ recent_commits AS (
         c.repository_id,
         c.author,
         c.occurred_at,
-        c.lines_changed,
         a.first_seen_at >= (NOW() - INTERVAL '30 days') AS is_new_author
     FROM public.github_events_flat c
     JOIN author_first_commit a ON c.repository_id = a.repository_id AND c.author = a.author
@@ -154,13 +192,13 @@ WITH recent_prs AS (
     SELECT
         repository_id,
         event_id,
-        is_merged,
-        review_comments_count,
+        (payload ->> 'merged_at') IS NOT NULL AS is_merged,
+        COALESCE((payload ->> 'review_comments')::integer, 0) AS review_comments_count,
         COALESCE(body, '') ILIKE '%review%' AS mention_review
     FROM public.github_events_flat
     WHERE source = 'pr'
       AND occurred_at >= (NOW() - INTERVAL '30 days')
-      AND is_merged = TRUE
+      AND (payload ->> 'merged_at') IS NOT NULL
 )
 SELECT
     repository_id,

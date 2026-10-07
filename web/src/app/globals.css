@@ -1,24 +1,23 @@
 @import "tailwindcss";
 
-/* Tokens from DESIGN-apple.md */
 :root {
-  --color-primary: #0066cc;
-  --color-primary-focus: #0071e3;
-  --color-primary-on-dark: #2997ff;
-  --color-ink: #1d1d1f;
-  --color-ink-muted-80: #333333;
-  --color-ink-muted-48: #7a7a7a;
-  --color-divider-soft: #f0f0f0;
-  --color-hairline: #e0e0e0;
-  --color-canvas: #ffffff;
-  --color-canvas-parchment: #f5f5f7;
-  --color-surface-pearl: #fafafc;
-  --color-surface-tile-1: #272729;
+  --color-primary: #6366f1;
+  --color-primary-focus: #4f46e5;
+  --color-primary-on-dark: #818cf8;
+  --color-ink: #fafafa;
+  --color-ink-muted-80: #a1a1aa;
+  --color-ink-muted-48: #71717a;
+  --color-divider-soft: rgba(255, 255, 255, 0.05);
+  --color-hairline: rgba(255, 255, 255, 0.1);
+  --color-canvas: #0a0a0a;
+  --color-canvas-parchment: #0a0a0a;
+  --color-surface-pearl: #18181b;
+  --color-surface-tile-1: #0a0a0a;
   --color-surface-black: #000000;
   --color-on-primary: #ffffff;
   --color-on-dark: #ffffff;
-  --shadow-product: 0 3px 5px rgba(0, 0, 0, 0.22);
-  --spacing-section: 80px;
+  --shadow-product: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --spacing-section: 100px;
 }
 
 @theme inline {
@@ -37,144 +36,169 @@
   --color-surface-black: var(--color-surface-black);
   --color-on-primary: var(--color-on-primary);
   --color-on-dark: var(--color-on-dark);
-  --font-sans: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Inter", system-ui, -apple-system, sans-serif;
   --spacing-section: var(--spacing-section);
+  --animate-scroll: scroll 40s linear infinite;
+  --animate-fade-in: fadeIn 1s ease-out;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 1rem)); }
+}
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-scrolling {
+  animation: scroll 40s linear infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeIn 1s ease-out forwards;
 }
 
 body {
   background: var(--color-canvas-parchment);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 17px;
-  line-height: 1.47;
-  letter-spacing: -0.374px;
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
+/* Base typography */
 .text-hero {
   font-family: var(--font-display);
-  font-size: clamp(28px, 5vw, 56px);
-  font-weight: 600;
-  line-height: 1.07;
-  letter-spacing: -0.28px;
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(to bottom, #ffffff, #71717a);
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .text-display-lg {
   font-family: var(--font-display);
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 600;
   line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .text-display-md {
   font-family: var(--font-display);
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 600;
-  line-height: 1.47;
-  letter-spacing: -0.374px;
+  line-height: 1.2;
 }
 
 .text-lead {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 1.14;
-  letter-spacing: 0.196px;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.6;
 }
 
 .text-body {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 1.47;
-  letter-spacing: -0.374px;
+  line-height: 1.6;
 }
 
 .text-caption {
   font-size: 14px;
-  line-height: 1.43;
-  letter-spacing: -0.224px;
+  line-height: 1.5;
 }
 
 .text-caption-strong {
   font-size: 14px;
-  font-weight: 600;
-  line-height: 1.29;
-  letter-spacing: -0.224px;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .text-nav {
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: -0.12px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
+/* Nav components */
 .global-nav {
-  background: var(--color-surface-black);
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: var(--color-on-dark);
 }
 
 .sub-nav-frosted {
-  background: color-mix(in srgb, var(--color-canvas-parchment) 80%, transparent);
-  backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.btn-primary {
+/* Buttons */
+.btn-primary, .vibe-btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  border-radius: 9999px;
-  padding: 11px 22px;
-  font-size: 17px;
-  font-weight: 400;
+  background: #f4f4f5; /* zinc-100 */
+  color: #18181b; /* zinc-900 */
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: all 0.2s ease-out;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
 }
 
-.btn-primary:active {
-  transform: scale(0.95);
+.btn-primary:hover, .vibe-btn-primary:hover {
+  background: #ffffff;
+  box-shadow: 0 0 25px rgba(255,255,255,0.2);
 }
 
-.btn-primary:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-}
-
-.btn-secondary-pill {
+.btn-secondary-pill, .vibe-btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-  border-radius: 9999px;
-  padding: 11px 22px;
-  font-size: 17px;
+  background: rgba(24, 24, 27, 0.8); /* zinc-900/80 */
+  color: #d4d4d8; /* zinc-300 */
+  border: 1px solid #27272a; /* zinc-800 */
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
 }
 
-.btn-secondary-pill:active {
-  transform: scale(0.95);
+.btn-secondary-pill:hover, .vibe-btn-ghost:hover {
+  background: #27272a;
+  color: #ffffff;
 }
 
-.btn-dark-utility {
+.btn-dark-utility, .vibe-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--color-ink);
-  color: var(--color-on-dark);
+  background: rgba(24, 24, 27, 0.8);
+  color: #d4d4d8;
   border-radius: 8px;
-  padding: 8px 15px;
+  padding: 8px 16px;
   font-size: 14px;
-  border: none;
+  font-weight: 500;
+  border: 1px solid #27272a;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.btn-dark-utility:active {
-  transform: scale(0.95);
+.btn-dark-utility:hover, .vibe-btn:hover {
+  background: #27272a;
+  color: #ffffff;
 }
 
 .text-link {
@@ -183,39 +207,53 @@ body {
   border: none;
   cursor: pointer;
   padding: 0;
+  transition: color 0.2s;
 }
+.text-link:hover { color: var(--color-primary-focus); }
 
+/* Inputs */
 .search-input {
-  background: var(--color-canvas);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--color-ink);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 9999px;
+  border: 1px solid #27272a;
+  border-radius: 8px;
   padding: 12px 20px;
-  height: 44px;
-  font-size: 17px;
+  font-size: 16px;
   width: 100%;
+  transition: all 0.2s;
 }
 
 .search-input:focus {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 0;
+  outline: none;
+  border-color: #52525b;
 }
 
+/* Tiles and Cards */
 .product-tile-dark {
-  background: var(--color-surface-tile-1);
+  background: #0a0a0a;
   color: var(--color-on-dark);
   padding: var(--spacing-section) 24px;
+  border-top: 1px solid #27272a;
+  position: relative;
+  overflow: hidden;
 }
 
 .product-tile-light {
-  background: var(--color-canvas);
+  background: #0c0c0c;
   color: var(--color-ink);
   padding: var(--spacing-section) 24px;
+  position: relative;
+  overflow: hidden;
 }
 
 .store-utility-card {
-  background: var(--color-canvas);
-  border: 1px solid var(--color-hairline);
-  border-radius: 18px;
-  padding: 24px;
+  background: rgba(24, 24, 27, 0.5); /* zinc-900/50 */
+  border: 1px solid rgba(39, 39, 42, 0.8); /* zinc-800/80 */
+  border-radius: 16px;
+  padding: 32px;
+  transition: all 0.2s;
+}
+
+.store-utility-card:hover {
+  border-color: #3f3f46;
 }

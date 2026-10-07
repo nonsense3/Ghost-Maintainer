@@ -168,15 +168,15 @@ export function DemoComparison() {
 
   const bandColor =
     scenario.band === "high"
-      ? "#cc3300"
+      ? "#ef4444" // red-500
       : scenario.band === "medium"
-        ? "#b37400"
-        : "#0066cc";
+        ? "#f59e0b" // amber-500
+        : "#10b981"; // emerald-500
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto space-y-8">
+    <div className="w-full mx-auto space-y-8 p-2 md:p-6 text-zinc-300">
       {/* Scenario Selector Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-1.5 bg-canvas rounded-full border border-hairline shadow-sm max-w-xl mx-auto">
+      <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 bg-zinc-900/50 rounded-full border border-zinc-800 shadow-[0_0_15px_rgba(0,0,0,0.5)] w-max mx-auto backdrop-blur-md">
         {SCENARIOS.map((s) => {
           const isSelected = s.id === activeId;
           return (
@@ -184,10 +184,10 @@ export function DemoComparison() {
               key={s.id}
               type="button"
               onClick={() => setActiveId(s.id)}
-              className={`px-4 py-2 rounded-full text-caption transition-all font-medium ${
+              className={`px-5 py-2 rounded-full text-sm transition-all font-semibold ${
                 isSelected
-                  ? "bg-ink text-on-dark shadow-sm"
-                  : "text-ink hover:text-primary"
+                  ? "bg-indigo-500 text-white shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                  : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
               }`}
             >
               {s.name}
@@ -196,45 +196,47 @@ export function DemoComparison() {
         })}
       </div>
 
-      {/* Main Comparison Glass Card */}
-      <div className="store-utility-card bg-canvas border border-hairline rounded-[22px] p-6 sm:p-10 shadow-sm transition-all">
+      {/* Main Comparison Card */}
+      <div className="bg-[#0c0c0c] border border-zinc-800/80 rounded-[24px] p-6 sm:p-10 shadow-2xl relative overflow-hidden transition-all duration-500 group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none group-hover:bg-indigo-500/10 transition-all duration-700" />
+        
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-hairline">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-zinc-800/80 relative z-10">
           <div>
-            <div className="flex items-center gap-3">
-              <h3 className="text-display-md text-ink tracking-tight font-semibold">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <h3 className="text-3xl text-zinc-100 tracking-tight font-bold">
                 {scenario.name}
               </h3>
               <span
-                className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-white"
-                style={{ backgroundColor: bandColor }}
+                className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-[#0A0A0A] w-max"
+                style={{ backgroundColor: bandColor, boxShadow: `0 0 15px ${bandColor}40` }}
               >
                 {scenario.band} Risk
               </span>
             </div>
-            <p className="text-body text-ink-muted-80 mt-1">{scenario.tagline}</p>
+            <p className="text-base text-zinc-400 mt-2 font-light">{scenario.tagline}</p>
           </div>
 
           {/* Quick Score Metrics */}
-          <div className="flex items-center gap-6 sm:gap-8">
+          <div className="flex items-center gap-6 sm:gap-8 p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
             <div className="text-center">
-              <span className="text-caption text-ink-muted-48 block">Linguistic</span>
-              <span className="text-display-lg text-ink font-semibold">
+              <span className="text-xs text-zinc-500 uppercase tracking-widest block mb-1">Linguistic</span>
+              <span className="text-3xl text-zinc-100 font-bold">
                 {scenario.linguisticScore}
               </span>
             </div>
-            <div className="text-2xl text-ink-muted-48 font-light">+</div>
+            <div className="text-2xl text-zinc-600 font-light">+</div>
             <div className="text-center">
-              <span className="text-caption text-ink-muted-48 block">Velocity</span>
-              <span className="text-display-lg text-ink font-semibold">
+              <span className="text-xs text-zinc-500 uppercase tracking-widest block mb-1">Velocity</span>
+              <span className="text-3xl text-zinc-100 font-bold">
                 {scenario.velocityScore}
               </span>
             </div>
-            <div className="text-2xl text-ink-muted-48 font-light">=</div>
-            <div className="text-center px-4 py-2 rounded-xl bg-canvas-parchment">
-              <span className="text-caption text-ink-muted-48 block">Risk Score</span>
+            <div className="text-2xl text-zinc-600 font-light">=</div>
+            <div className="text-center pl-4 border-l border-zinc-800">
+              <span className="text-xs text-zinc-500 uppercase tracking-widest block mb-1">Risk Score</span>
               <span
-                className="text-hero text-5xl font-bold tabular-nums"
+                className="text-4xl font-black tabular-nums drop-shadow-md"
                 style={{ color: bandColor }}
               >
                 {scenario.riskScore}
@@ -244,51 +246,54 @@ export function DemoComparison() {
         </div>
 
         {/* 5 Behavioral Signals Grid */}
-        <div className="py-8 border-b border-hairline">
-          <h4 className="text-body-strong text-ink mb-2">
-            Behavioral Drift Signals (PRD §5 SQL Window Functions)
-          </h4>
-          <p className="text-caption text-ink-muted-48 mb-6">
-            Evaluated directly in Postgres / Snowflake over 30-day vs 90-day activity baselines.
-          </p>
+        <div className="py-10 border-b border-zinc-800/80 relative z-10">
+          <div className="mb-8">
+            <h4 className="text-xl font-semibold text-zinc-100 mb-2">
+              Behavioral Drift Signals
+            </h4>
+            <p className="text-sm text-zinc-500 font-light">
+              Evaluated directly in Postgres / Snowflake over 30-day vs 90-day activity baselines.
+            </p>
+          </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {Object.entries(scenario.signals).map(([key, data]) => {
               const sigColor =
                 data.score >= 70
-                  ? "#cc3300"
+                  ? "#ef4444"
                   : data.score >= 35
-                    ? "#b37400"
-                    : "#0066cc";
+                    ? "#f59e0b"
+                    : "#10b981";
               return (
                 <div
                   key={key}
-                  className="p-4 rounded-xl bg-canvas-parchment border border-hairline/80 flex flex-col justify-between"
+                  className="p-5 rounded-2xl bg-[#0a0a0a] border border-zinc-800/80 hover:border-zinc-700 transition-all flex flex-col justify-between group/card shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(255,255,255,0.02)]"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-caption-strong text-ink capitalize">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-sm font-semibold text-zinc-300 capitalize tracking-wide">
                         {key.replace(/_/g, " ")}
                       </span>
                       <span
-                        className="text-caption font-bold tabular-nums"
+                        className="text-sm font-bold tabular-nums"
                         style={{ color: sigColor }}
                       >
                         {data.score}/100
                       </span>
                     </div>
                     {/* Progress Bar */}
-                    <div className="h-1.5 w-full bg-hairline rounded-full overflow-hidden mb-3">
+                    <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden mb-4 shadow-inner">
                       <div
-                        className="h-full rounded-full transition-all duration-500"
+                        className="h-full rounded-full transition-all duration-1000 ease-out"
                         style={{
                           width: `${data.score}%`,
                           backgroundColor: sigColor,
+                          boxShadow: `0 0 10px ${sigColor}80`
                         }}
                       />
                     </div>
                   </div>
-                  <p className="text-caption text-ink-muted-80 leading-relaxed text-[13px]">
+                  <p className="text-sm text-zinc-400 leading-relaxed font-light">
                     {data.desc}
                   </p>
                 </div>
@@ -298,20 +303,31 @@ export function DemoComparison() {
         </div>
 
         {/* Gemma Linguistic Analysis */}
-        <div className="pt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-body-strong text-ink">
-              Gemma Linguistic Flags (Ollama / Cortex Zero-Egress)
-            </h4>
-            <span className="text-caption text-ink-muted-48">
-              {scenario.gemmaFlags.length} flagged comments
-            </span>
+        <div className="pt-10 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+            <div>
+              <h4 className="text-xl font-semibold text-zinc-100 mb-2">
+                Gemma Linguistic Flags
+              </h4>
+              <p className="text-sm text-zinc-500 font-light">
+                Local LLM inference via Ollama / Cortex Zero-Egress.
+              </p>
+            </div>
+            <div className="px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-sm text-zinc-300 font-medium whitespace-nowrap">
+              {scenario.gemmaFlags.length} flagged comment{scenario.gemmaFlags.length !== 1 ? 's' : ''}
+            </div>
           </div>
 
           {scenario.gemmaFlags.length === 0 ? (
-            <div className="p-6 rounded-xl bg-canvas-parchment text-center">
-              <p className="text-body text-ink-muted-80">
-                ✓ No high-risk language detected. Communications adhere to healthy multi-contributor norms.
+            <div className="p-8 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 text-center flex flex-col items-center justify-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <p className="text-zinc-300 font-medium">
+                No high-risk language detected.
+              </p>
+              <p className="text-sm text-zinc-500">
+                Communications adhere to healthy multi-contributor norms.
               </p>
             </div>
           ) : (
@@ -319,33 +335,43 @@ export function DemoComparison() {
               {scenario.gemmaFlags.map((flag, idx) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-xl bg-canvas-parchment border border-hairline/90 space-y-3"
+                  className="p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-4 hover:bg-zinc-900/60 transition-colors"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-caption-strong text-ink">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <span className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-400 border border-zinc-700">
+                        {flag.author.charAt(0)}
+                      </span>
                       {flag.author}
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       {flag.signals.map((sig) => (
                         <span
                           key={sig}
-                          className="px-2 py-0.5 rounded-full text-[11px] bg-red-100 text-red-800 font-mono"
+                          className="px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider bg-red-500/10 border border-red-500/20 text-red-400 font-semibold"
                         >
                           {sig}
                         </span>
                       ))}
-                      <span className="text-caption-strong text-red-600 font-bold ml-1">
-                        Risk {flag.score}
+                      <span className="text-xs px-2.5 py-1 rounded-md bg-red-500 text-white font-bold tracking-wider ml-1 shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                        RISK {flag.score}
                       </span>
                     </div>
                   </div>
-                  <blockquote className="border-l-2 border-red-500 pl-3 italic text-caption text-ink text-[14px]">
-                    "{flag.quote}"
-                  </blockquote>
-                  <p className="text-caption text-ink-muted-80 text-[13px]">
-                    <span className="font-semibold text-ink">Gemma Analysis:</span>{" "}
-                    {flag.reason}
-                  </p>
+                  <div className="pl-4 py-2 border-l-2 border-red-500/50">
+                    <blockquote className="italic text-zinc-300 text-[15px] leading-relaxed">
+                      "{flag.quote}"
+                    </blockquote>
+                  </div>
+                  <div className="p-3 rounded-xl bg-[#0A0A0A] border border-zinc-800/80 flex items-start gap-3">
+                    <div className="mt-0.5">
+                      <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <p className="text-sm text-zinc-400 leading-relaxed font-light">
+                      <span className="font-semibold text-indigo-300">Gemma Insight: </span>
+                      {flag.reason}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

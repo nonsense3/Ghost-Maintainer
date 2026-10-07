@@ -1,6 +1,7 @@
 """
 Snowflake Raw JSON Ingestion (PRD §8 fetcher/load_snowflake.py).
 Loads cached or fetched GitHub event JSON into Snowflake VARIANT column.
+Automatically reads credentials from fetcher/.env, web/.env.local, or environment.
 """
 
 from __future__ import annotations
@@ -9,6 +10,29 @@ import argparse
 import json
 import os
 import sys
+from pathlib import Path
+
+# Load environment files automatically
+def load_env_file():
+    paths_to_check = [
+        Path(__file__).parent / ".env",
+        Path(__file__).parent.parent / "web" / ".env.local",
+        Path(__file__).parent.parent / "web" / ".env",
+        Path(__file__).parent.parent / ".env",
+    ]
+    for p in paths_to_check:
+        if p.exists():
+            with open(p, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip('"').strip("'")
+                        if k not in os.environ and v:
+                            os.environ[k] = v
+
+load_env_file()
 
 try:
     import snowflake.connector
@@ -32,9 +56,12 @@ def load_events_to_snowflake(json_path: str, repo_id: str) -> None:
     database = os.environ.get("SNOWFLAKE_DATABASE", "GHOST_MAINTAINER")
     schema = os.environ.get("SNOWFLAKE_SCHEMA", "ANALYTICS")
 
+    print(f"[*] Connecting to Snowflake account: {account} as user: {user}")
+
     if not all([user, password, account]):
-        print("\n[i] SNOWFLAKE credentials not present in environment.")
-        print(f"    Sample Snowflake SQL to load {json_path} directly:\n")
+        print("\n[i] Notice: SNOWFLAKE_PASSWORD is empty in your .env file.")
+        print("    Add your password to fetcher/.env or web/.env.local to execute direct inserts.\n")
+        print(f"    Alternatively, load {json_path} via Snowflake Worksheet (zero-driver):\n")
         print(f"    PUT file://{os.path.abspath(json_path)} @GHOST_MAINTAINER.ANALYTICS.%RAW_GITHUB_EVENTS;")
         print(f"    COPY INTO GHOST_MAINTAINER.ANALYTICS.RAW_GITHUB_EVENTS FROM @%RAW_GITHUB_EVENTS FILE_FORMAT=(TYPE='JSON');")
         return
@@ -64,7 +91,7 @@ def load_events_to_snowflake(json_path: str, repo_id: str) -> None:
                 ev["occurred_at"],
                 json.dumps(ev["payload"]),
             ))
-        print(f"[✓] Successfully inserted {len(events)} events into Snowflake.")
+        print(f"[✓] Successfully inserted {len(events)} events into Snowflake {database}.{schema}.RAW_GITHUB_EVENTS.")
     finally:
         cs.close()
         ctx.close()

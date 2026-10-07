@@ -9,6 +9,14 @@ const serverEnvSchema = z.object({
   GEMMA_MODEL: z.string().default("gemma4:31b-cloud"),
   GEMMA_API_KEY: z.string().min(1).optional(),
   GEMMA_API_BASE_URL: z.string().url().optional(),
+
+  // Snowflake Zero-Egress Storage (PRD Track 3)
+  SNOWFLAKE_ACCOUNT: z.string().optional(),
+  SNOWFLAKE_USER: z.string().optional(),
+  SNOWFLAKE_PASSWORD: z.string().optional(),
+  SNOWFLAKE_WAREHOUSE: z.string().default("COMPUTE_WH"),
+  SNOWFLAKE_DATABASE: z.string().default("GHOST_MAINTAINER"),
+  SNOWFLAKE_SCHEMA: z.string().default("ANALYTICS"),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

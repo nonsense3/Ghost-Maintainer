@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix web run start",
+    "lint": "npm --prefix web run lint",
     "scan": "node cli/scan.mjs demo",
-    "scan:deps": "node cli/scan.mjs scan-deps --file web/package.json"
+    "scan:deps": "node cli/scan.mjs scan-deps --file web/package.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",

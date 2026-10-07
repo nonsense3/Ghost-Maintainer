@@ -13,10 +13,10 @@ export function GlobalNav({ right }: { right?: React.ReactNode }) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-zinc-800/80">
-      <div className="w-full px-6 md:px-12 py-4 flex items-center justify-between">
+      <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center group">
-          <div className="relative w-40 md:w-48 h-10 flex items-center justify-start">
+          <div className="relative w-40 md:w-48 h-10 flex items-center justify-start -ml-12 md:-ml-24">
             <img src="/logo.png" alt="Ghost Maintainer" className="w-full h-full object-contain scale-[2.5] md:scale-[3] origin-left" />
           </div>
         </Link>

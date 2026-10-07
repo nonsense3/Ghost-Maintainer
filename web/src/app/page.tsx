@@ -44,12 +44,12 @@ export default function HomePage() {
             <span className="text-xs font-medium text-zinc-300 tracking-wide uppercase">Ghost Engine v1.0</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 mb-6 max-w-4xl">
-            Maintainer Intelligence. <br /> Zero Egress.
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 mb-6 max-w-4xl leading-tight">
+            Stop supply chain attacks <br className="hidden md:block" /> before they <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">start.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed font-light">
-            An advanced behavioral engine that monitors public GitHub activity to detect burnout, tone shift, and supply chain hijacking—before the CVE is published.
+            Prevent the next xz-utils hack. Ghost Maintainer audits human behavior, detecting compromised accounts and burned-out maintainers before malicious code is ever merged.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">

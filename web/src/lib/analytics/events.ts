@@ -51,6 +51,15 @@ export function flattenEvent(row: {
 }
 
 export function eventTextForScoring(flat: FlatEvent): string | null {
-  if (flat.source !== "comment" && flat.source !== "issue") return null;
-  return flat.body;
+  if (!flat.body) return null;
+  const trimmed = flat.body.trim();
+  // Comments, PR descriptions, issue bodies, and meaningful commit messages
+  if (flat.source === "comment" || flat.source === "issue" || flat.source === "pr") {
+    return trimmed.length >= 8 ? trimmed : null;
+  }
+  if (flat.source === "commit" && trimmed.length >= 12) {
+    return trimmed;
+  }
+  return null;
 }
+

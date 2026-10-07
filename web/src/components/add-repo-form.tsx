@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RepoScanModal } from "./repo-scan-modal";
 
 export function AddRepoForm() {
+
   const router = useRouter();
   const [urlInput, setUrlInput] = useState("");
   const [owner, setOwner] = useState("");
@@ -48,6 +50,9 @@ export function AddRepoForm() {
   }
 
   const detected = resolveTarget();
+  const [showModal, setShowModal] = useState(false);
+  const [targetRepoName, setTargetRepoName] = useState("");
+  const [ingestedRepoId, setIngestedRepoId] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,6 +66,10 @@ export function AddRepoForm() {
       return;
     }
 
+    const fullName = `${target.owner}/${target.name}`;
+    setTargetRepoName(fullName);
+    setShowModal(true);
+
     try {
       const res = await fetch("/api/repos/ingest", {
         method: "POST",
@@ -70,20 +79,32 @@ export function AddRepoForm() {
       const data = await res.json();
       if (!res.ok) {
         setStatus(data.error ?? "Ingestion failed");
+        setShowModal(false);
         return;
       }
       setStatus(`Ingested ${data.ingested_events} events for ${data.full_name}.`);
+      setIngestedRepoId(data.repository_id);
       setUrlInput("");
       setOwner("");
       setName("");
-      router.refresh();
+
+      // Automatically trigger initial Gemma & SQL analysis in background
       if (data.repository_id) {
-        router.push(`/dashboard/repos/${data.repository_id}`);
+        fetch(`/api/repos/${data.repository_id}/analyze`, { method: "POST" }).catch(() => {});
       }
     } catch {
       setStatus("Network connection error. Please try again.");
+      setShowModal(false);
     } finally {
       setLoading(false);
+    }
+  }
+
+  function handleScanComplete() {
+    setShowModal(false);
+    router.refresh();
+    if (ingestedRepoId) {
+      router.push(`/dashboard/repos/${ingestedRepoId}`);
     }
   }
 
@@ -93,6 +114,7 @@ export function AddRepoForm() {
     if (match) {
       setOwner(match[1]);
       setName(match[2].replace(/\.git$/i, ""));
+
     }
   }
 
@@ -189,6 +211,13 @@ export function AddRepoForm() {
           {status}
         </p>
       )}
+
+      <RepoScanModal
+        isOpen={showModal}
+        repoName={targetRepoName || "Repository"}
+        onComplete={handleScanComplete}
+      />
     </form>
   );
 }
+

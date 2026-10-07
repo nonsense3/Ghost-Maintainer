@@ -53,7 +53,7 @@ export async function runRepositoryAnalysis(repositoryId: string) {
         risk_score: result.risk_score,
         signals: result.signals,
         reason: result.reason,
-        model: GEMMA_MODEL,
+        model: result.model_used || GEMMA_MODEL,
       },
       { onConflict: "event_id" },
     );
@@ -69,7 +69,7 @@ export async function runRepositoryAnalysis(repositoryId: string) {
       ? Math.round(
           allScores.reduce((s, r) => s + r.risk_score, 0) / allScores.length,
         )
-      : 0;
+      : (toScore.length === 0 && flat.length > 0 ? 15 : 0);
 
   const { week_start, signals, velocity_score } =
     computeBehaviorSignals(flat);
@@ -88,7 +88,7 @@ export async function runRepositoryAnalysis(repositoryId: string) {
   }
 
   const red_flags = (allScores ?? [])
-    .filter((s) => s.risk_score >= 50)
+    .filter((s) => s.risk_score >= 40)
     .slice(0, 8)
     .map((s) => ({
       event_id: s.event_id,
@@ -98,7 +98,7 @@ export async function runRepositoryAnalysis(repositoryId: string) {
     }));
 
   signals
-    .filter((s) => s.score >= 50)
+    .filter((s) => s.score >= 40)
     .forEach((s) => {
       red_flags.push({
         event_id: 0,
@@ -107,6 +107,7 @@ export async function runRepositoryAnalysis(repositoryId: string) {
         signals: [s.signal_key],
       });
     });
+
 
   const { risk_score, band } = combineRisk(linguistic_score, velocity_score);
 

@@ -8,7 +8,10 @@ import { GlobalNav } from "@/components/global-nav";
 import { RedFlagList } from "@/components/red-flag-list";
 import { RiskGauge } from "@/components/risk-gauge";
 import { RiskTrend } from "@/components/risk-trend";
+import { SnowflakeHub } from "@/components/snowflake-hub";
+import { generateSnowflakeAnalysisSql } from "@/lib/snowflake/client";
 import { createClient } from "@/lib/supabase/server";
+
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -332,7 +335,9 @@ export default async function RepoDetailPage({ params }: Params) {
         </div>
       </div>
       <main className="max-w-[1440px] mx-auto px-6 py-12 space-y-8">
-        {!id.startsWith("demo-") && <AnalyzeButton repositoryId={id} />}
+        {!id.startsWith("demo-") && (
+          <AnalyzeButton repositoryId={id} repoName={repo.full_name} />
+        )}
 
         <div className="grid gap-6 lg:grid-cols-2">
           {latest ? (
@@ -376,6 +381,13 @@ export default async function RepoDetailPage({ params }: Params) {
           </div>
         )}
 
+        {/* Snowflake Zero-Egress Analytics & Cortex Hub */}
+        <SnowflakeHub
+          repositoryId={id}
+          fullName={repo.full_name}
+          initialSql={generateSnowflakeAnalysisSql(repo.full_name)}
+        />
+
         <div className="grid gap-6 lg:grid-cols-2">
           <RedFlagList flags={redFlags} />
           <ExplainScorePanel
@@ -386,6 +398,7 @@ export default async function RepoDetailPage({ params }: Params) {
             }))}
           />
         </div>
+
 
         {behavior && behavior.length > 0 && (
           <section className="store-utility-card">

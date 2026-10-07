@@ -9,6 +9,7 @@
     "start": "npm --prefix web run start",
     "lint": "npm --prefix web run lint",
     "scan": "node cli/scan.mjs demo",
+    "scan:repo": "node cli/scan.mjs scan",
     "scan:deps": "node cli/scan.mjs scan-deps --file web/package.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

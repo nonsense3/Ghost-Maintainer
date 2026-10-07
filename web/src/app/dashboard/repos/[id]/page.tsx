@@ -314,7 +314,7 @@ export default async function RepoDetailPage({ params }: Params) {
     }>) ?? [];
 
   return (
-    <div className="min-h-screen bg-canvas-parchment">
+    <div className="min-h-screen bg-canvas-parchment pt-16">
       <GlobalNav />
       <div className="sub-nav-frosted h-[52px] flex items-center justify-between px-6 border-b border-hairline max-w-[1440px] mx-auto w-full">
         <Link href="/dashboard" className="text-link text-body">

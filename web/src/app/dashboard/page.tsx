@@ -80,7 +80,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas-parchment">
+    <div className="min-h-screen bg-canvas-parchment pt-16">
       <GlobalNav
         right={
           user ? (

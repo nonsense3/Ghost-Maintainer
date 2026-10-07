@@ -19,6 +19,7 @@ function sinceIso() {
 async function paginate<T>(
   path: string,
   maxPages = 5,
+  tokenOverride?: string | null,
 ): Promise<T[]> {
   const out: T[] = [];
   let page = 1;
@@ -26,6 +27,8 @@ async function paginate<T>(
     const sep = path.includes("?") ? "&" : "?";
     const chunk = await githubFetch<T[]>(
       `${path}${sep}per_page=100&page=${page}`,
+      undefined,
+      tokenOverride,
     );
     if (!chunk.length) break;
     out.push(...chunk);
@@ -38,6 +41,7 @@ async function paginate<T>(
 export async function collectRepositoryEvents(
   owner: string,
   name: string,
+  tokenOverride?: string | null,
 ): Promise<IngestEvent[]> {
   const since = sinceIso();
   const events: IngestEvent[] = [];
@@ -45,7 +49,7 @@ export async function collectRepositoryEvents(
   const commits = await paginate<{
     sha: string;
     commit: { author: { date: string }; message: string };
-  }>(`/repos/${owner}/${name}/commits?since=${since}`);
+  }>(`/repos/${owner}/${name}/commits?since=${since}`, 5, tokenOverride);
 
   for (const c of commits) {
     events.push({
@@ -66,7 +70,7 @@ export async function collectRepositoryEvents(
     user: { login: string } | null;
     body: string | null;
     title: string;
-  }>(`/repos/${owner}/${name}/pulls?state=all&sort=updated&direction=desc`);
+  }>(`/repos/${owner}/${name}/pulls?state=all&sort=updated&direction=desc`, 5, tokenOverride);
 
   for (const pr of pulls) {
     if (new Date(pr.updated_at).getTime() < Date.now() - SIX_MONTHS_MS) continue;
@@ -87,7 +91,7 @@ export async function collectRepositoryEvents(
     user: { login: string } | null;
     body: string | null;
     title: string;
-  }>(`/repos/${owner}/${name}/issues?state=all&sort=updated&direction=desc`);
+  }>(`/repos/${owner}/${name}/issues?state=all&sort=updated&direction=desc`, 5, tokenOverride);
 
   const issueOnly = issues.filter((i) => !i.pull_request);
   for (const issue of issueOnly) {
@@ -114,6 +118,8 @@ export async function collectRepositoryEvents(
       }>
     >(
       `/repos/${owner}/${name}/issues/${issue.number}/comments?per_page=100`,
+      undefined,
+      tokenOverride,
     );
     for (const comment of comments) {
       events.push({

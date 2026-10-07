@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getRepository } from "@/lib/github/client";
 import { collectRepositoryEvents } from "@/lib/github/ingest";
+import { getUserGitHubToken } from "@/lib/github/token";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -35,7 +36,9 @@ export async function POST(request: Request) {
   const { owner, name } = parsed.data;
 
   try {
-    const meta = await getRepository(owner, name);
+    // Resolve user's stored OAuth token or fallback
+    const userToken = await getUserGitHubToken(user.id);
+    const meta = await getRepository(owner, name, userToken);
 
     const { data: repoRow, error: repoError } = await supabase
       .from("repositories")
@@ -58,7 +61,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const collected = await collectRepositoryEvents(owner, name);
+    const collected = await collectRepositoryEvents(owner, name, userToken);
     const admin = createAdminClient();
     const rows = collected.map((ev) => ({
       repository_id: repoRow.id,

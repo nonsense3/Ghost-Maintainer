@@ -4,7 +4,8 @@ import Link from "next/link";
 import { AddRepoForm } from "@/components/add-repo-form";
 import { GlobalNav } from "@/components/global-nav";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "./actions";
+import { signOut, saveUserGitHubToken } from "./actions";
+import { getUserGitHubToken } from "@/lib/github/token";
 
 const PRESET_DEMO_REPOS = [
   {
@@ -28,11 +29,16 @@ const PRESET_DEMO_REPOS = [
 ];
 
 export default async function DashboardPage() {
-  let user: { email?: string } | null = null;
+  let user: {
+    id: string;
+    email?: string;
+    user_metadata?: Record<string, unknown>;
+  } | null = null;
   let repos: Array<{ id: string; full_name: string; created_at: string }> | null =
     null;
   const riskByRepo = new Map<string, { risk_score: number; band: string }>();
   let hasSupabase = false;
+  let userGitHubToken: string | null = null;
 
   try {
     const supabase = await createClient();
@@ -41,6 +47,10 @@ export default async function DashboardPage() {
     } = await supabase.auth.getUser();
     user = authUser;
     hasSupabase = true;
+
+    if (authUser) {
+      userGitHubToken = await getUserGitHubToken(authUser.id);
+    }
 
     const { data: dbRepos } = await supabase
       .from("repositories")
@@ -94,12 +104,66 @@ export default async function DashboardPage() {
       </div>
       <main className="max-w-[1440px] mx-auto px-6 py-12 space-y-12">
         {/* User bar or setup note */}
-        {user ? (
-          <div>
-            <p className="text-caption text-ink-muted-48">Signed in as</p>
-            <p className="text-body-strong text-ink">{user.email}</p>
-          </div>
-        ) : !hasSupabase ? (
+        {user ? (() => {
+          const meta = user.user_metadata || {};
+          const avatarUrl = typeof meta.avatar_url === "string" ? meta.avatar_url : null;
+          const fullName = typeof meta.full_name === "string" ? meta.full_name : null;
+          const githubUsername = typeof meta.github_username === "string" ? meta.github_username : null;
+          const displayName = fullName || githubUsername || user.email || "Maintainer";
+          const initialLetter = displayName[0]?.toUpperCase() || "U";
+
+          return (
+            <div className="p-6 rounded-2xl bg-canvas border border-hairline shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-surface-raised border border-hairline flex items-center justify-center font-bold text-lg text-ink overflow-hidden shrink-0">
+                  {avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>{initialLetter}</span>
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-body-strong text-ink">{displayName}</p>
+                    {githubUsername && (
+                      <span className="text-caption text-ink-muted-48">
+                        @{githubUsername}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-caption text-ink-muted-48">{user.email}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {userGitHubToken ? (
+                  <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    GitHub Token Stored &amp; Active
+                  </div>
+                ) : (
+                  <form action={saveUserGitHubToken} className="flex items-center gap-2">
+                    <input
+                      type="password"
+                      name="github_token"
+                      placeholder="Enter GitHub Token (ghp_...)"
+                      className="search-input text-xs py-1.5 px-3 w-52 font-mono"
+                      required
+                    />
+                    <button type="submit" className="btn-dark-utility text-xs py-1.5">
+                      Save Key
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          );
+        })() : !hasSupabase ? (
           <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-caption text-blue-900">
             <span className="font-semibold">Demo Sandbox Active:</span> Supabase
             environment credentials not configured yet. You can explore complete

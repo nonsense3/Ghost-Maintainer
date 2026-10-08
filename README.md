@@ -122,27 +122,51 @@ pip install -r requirements.txt
 
 ## Usage
 
-### CLI Scanner
+### Scan Any GitHub Repository
 
-Run pre-computed incident demonstrations or scan live repositories directly from the terminal.
+Assess the supply chain risk of any public GitHub repository by passing `owner/repo`:
 
 ```bash
-# Side-by-side demo: xz-utils (High Risk) vs flask (Low Risk)
-npm run scan
+# Scan a repository (e.g., your own project's dependency)
+node cli/scan.mjs scan facebook/react
+node cli/scan.mjs scan expressjs/express
+node cli/scan.mjs scan tukaani-project/xz
 
-# Scan a specific repository
+# With a GitHub token for higher rate limits
+node cli/scan.mjs scan <owner>/<repo> --token ghp_your_token_here
+```
+
+Or via npm scripts:
+
+```bash
 npm run scan:repo -- <owner>/<repo>
-
-# Audit all dependencies in a package.json
-npm run scan:deps
 ```
 
-The Python CLI provides equivalent functionality:
+The scanner fetches live commit, PR, and issue data from the GitHub API, computes all 5 behavioral signals, runs keyword-based linguistic analysis, and outputs a full risk report in the terminal.
+
+### Audit Your Dependencies
+
+Scan every dependency listed in your project's `package.json` for supply chain risk:
 
 ```bash
-python cli/scan.py demo
-python cli/scan.py scan <owner>/<repo>
+# Audit the web app's dependencies
+npm run scan:deps
+
+# Audit any package.json file
+node cli/scan.mjs scan-deps --file /path/to/your/project/package.json
 ```
+
+This outputs a table with risk scores and bands for each dependency, flagging any packages with known incidents (e.g., `event-stream`, `ua-parser-js`, `colors`).
+
+### Run the Demo
+
+See pre-computed risk assessments for known supply chain incidents without any API calls:
+
+```bash
+npm run scan
+```
+
+This displays side-by-side reports for `xz-utils` (86 — High Risk) vs. `pallets/flask` (13 — Low Risk).
 
 ### Web Dashboard
 
@@ -153,9 +177,16 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000). The dashboard includes:
 
 - **Incident Study** — Interactive comparison of real supply chain incidents with behavioral signal breakdowns.
-- **Dependency Scanner** — Upload or paste a `package.json` to triage your dependency tree.
+- **Dependency Scanner** — Upload or paste a `package.json` to triage your dependency tree in-browser.
 - **SQL Signals Showcase** — Interactive breakdown of all 5 behavioral signal computations.
 - **Repository Detail** — Risk gauge, score trend over time, behavioral meters, and Gemma explanation panels.
+
+### Python CLI (Alternative)
+
+```bash
+python cli/scan.py demo                    # Demo mode
+python cli/scan.py scan <owner>/<repo>     # Scan a repository
+```
 
 ### Supabase Setup (Optional)
 

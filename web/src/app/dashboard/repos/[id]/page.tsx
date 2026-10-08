@@ -17,6 +17,11 @@ type Params = { params: Promise<{ id: string }> };
 export default async function RepoDetailPage({ params }: Params) {
   const { id } = await params;
 
+  let user: {
+    id: string;
+    email?: string;
+    user_metadata?: Record<string, unknown>;
+  } | null = null;
   let repo: { id: string; full_name: string; owner: string; name: string } | null = null;
   let riskHistory: Array<{
     week_start: string;
@@ -36,8 +41,9 @@ export default async function RepoDetailPage({ params }: Params) {
   try {
     const supabase = await createClient();
     const {
-      data: { user },
+      data: { user: authUser },
     } = await supabase.auth.getUser();
+    user = authUser;
 
     if (!user) {
       redirect(`/login?next=/dashboard/repos/${id}`);
@@ -149,7 +155,7 @@ export default async function RepoDetailPage({ params }: Params) {
 
   return (
     <div className="min-h-screen bg-canvas-parchment pt-16">
-      <GlobalNav />
+      <GlobalNav user={user} />
       <div className="sub-nav-frosted h-[52px] flex items-center justify-between px-6 border-b border-hairline max-w-[1440px] mx-auto w-full">
         <Link href="/dashboard" className="text-link text-body">
           ← Back to Dashboard

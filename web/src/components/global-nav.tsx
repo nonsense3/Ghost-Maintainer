@@ -1,7 +1,56 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-export function GlobalNav({ right }: { right?: React.ReactNode }) {
+interface GlobalNavProps {
+  right?: React.ReactNode;
+  user?: {
+    email?: string;
+    user_metadata?: Record<string, unknown>;
+  } | null;
+}
+
+export function GlobalNav({ right, user: initialUser }: GlobalNavProps) {
+  const [user, setUser] = useState(initialUser ?? null);
+
+  useEffect(() => {
+    if (initialUser !== undefined) {
+      setUser(initialUser);
+      return;
+    }
+    try {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data }) => {
+        setUser(data.user);
+      });
+
+      const { data: listener } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setUser(session?.user ?? null);
+        },
+      );
+
+      return () => {
+        listener.subscription.unsubscribe();
+      };
+    } catch {
+      // Supabase not configured in client environment
+    }
+  }, [initialUser]);
+
+  async function handleSignOut() {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch {
+      // Ignore
+    }
+    window.location.href = "/";
+  }
+
   const navLinks = [
     { to: "/#demo", label: "Incident Triage" },
     { to: "/#scanner", label: "Dependency Scanner" },
@@ -9,6 +58,13 @@ export function GlobalNav({ right }: { right?: React.ReactNode }) {
     { to: "/cli", label: "CLI Guide" },
     { to: "/dashboard", label: "Live Dashboard" },
   ];
+
+  const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
+  const username =
+    (user?.user_metadata?.user_name as string | undefined) ??
+    (user?.user_metadata?.preferred_username as string | undefined) ??
+    (user?.user_metadata?.full_name as string | undefined) ??
+    user?.email;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A]/85 backdrop-blur-md border-b border-zinc-800/80">
@@ -51,22 +107,56 @@ export function GlobalNav({ right }: { right?: React.ReactNode }) {
         </nav>
 
         {/* Right Action */}
-        <div className="flex items-center gap-4">
-          {!right && (
-            <Link
-              href="/login"
-              className="hidden md:block text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-            >
-              Sign In
-            </Link>
-          )}
-          {right || (
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 rounded-lg bg-zinc-100 text-zinc-900 font-semibold hover:bg-white transition-colors text-sm shadow-sm"
-            >
-              Launch App
-            </Link>
+        <div className="flex items-center gap-3">
+          {right ? (
+            right
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={username || "User"}
+                  className="w-7 h-7 rounded-full border border-zinc-700 object-cover"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-bold text-zinc-300">
+                  {(username?.[0] || "U").toUpperCase()}
+                </div>
+              )}
+              {username && (
+                <span className="text-sm font-medium text-zinc-300 hidden sm:inline max-w-[140px] truncate">
+                  {username}
+                </span>
+              )}
+              <Link
+                href="/dashboard"
+                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 text-zinc-200 hover:bg-zinc-700 transition-colors border border-zinc-700/60"
+              >
+                Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-colors cursor-pointer"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/login"
+                className="hidden md:block text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 rounded-lg bg-zinc-100 text-zinc-900 font-semibold hover:bg-white transition-colors text-sm shadow-sm"
+              >
+                Launch App
+              </Link>
+            </div>
           )}
         </div>
       </div>

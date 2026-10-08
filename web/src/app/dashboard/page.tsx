@@ -77,21 +77,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-canvas-parchment pt-16">
-      <GlobalNav
-        right={
-          user ? (
-            <form action={signOut}>
-              <button type="submit" className="btn-dark-utility">
-                Sign out
-              </button>
-            </form>
-          ) : (
-            <Link href="/login" className="btn-dark-utility">
-              Sign in
-            </Link>
-          )
-        }
-      />
+      <GlobalNav user={user} />
       <div className="sub-nav-frosted h-[52px] flex items-center justify-between px-6 border-b border-hairline max-w-[1440px] mx-auto w-full">
         <span className="text-[21px] font-semibold text-ink">Dashboard</span>
         <span className="text-caption text-ink-muted-48">

@@ -21,13 +21,7 @@ export default function HomePage() {
     <div className="min-h-screen text-zinc-50 font-sans selection:bg-indigo-500/30 overflow-x-hidden">
 
       {/* 1. Global Navigation Bar */}
-      <GlobalNav
-        right={
-          <Link href="/dashboard" className="px-4 py-2 rounded-lg bg-zinc-100 text-zinc-900 font-semibold hover:bg-white transition-colors text-sm">
-            Launch App
-          </Link>
-        }
-      />
+      <GlobalNav />
 
       {/* Removed mb-32 and huge paddings. Using flex-col and minimal gaps for seamless flow */}
       <main className="w-full flex flex-col items-center">

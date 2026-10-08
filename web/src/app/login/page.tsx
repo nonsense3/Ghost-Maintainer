@@ -1,4 +1,4 @@
-﻿export const instant = false;
+export const instant = false;
 
 import Link from "next/link";
 import Image from "next/image";
@@ -15,18 +15,15 @@ export default async function LoginPage({
     <div className="min-h-screen bg-[#0A0A0A] text-zinc-100 flex flex-col selection:bg-indigo-500/30">
       {/* Header */}
       <header className="h-16 border-b border-zinc-800/80 bg-[#0A0A0A]/85 backdrop-blur-md flex items-center justify-between px-6 md:px-12">
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href="/" className="flex items-center group">
           <Image
             src="/logo.png"
             alt="Ghost Maintainer Logo"
-            width={32}
-            height={32}
-            className="w-8 h-8 rounded-lg object-contain"
+            width={180}
+            height={40}
+            className="h-8 w-auto object-contain"
             priority
           />
-          <span className="text-xl font-bold tracking-tight text-white group-hover:text-zinc-200 transition-colors">
-            Ghost Maintainer
-          </span>
         </Link>
 
         <Link
@@ -45,9 +42,9 @@ export default async function LoginPage({
               <Image
                 src="/logo.png"
                 alt="Ghost Maintainer"
-                width={48}
+                width={180}
                 height={48}
-                className="w-12 h-12 rounded-lg object-contain"
+                className="h-12 w-auto object-contain"
                 priority
               />
             </div>

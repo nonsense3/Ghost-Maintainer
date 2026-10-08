@@ -360,7 +360,7 @@ export function DemoComparison() {
                   </div>
                   <div className="pl-4 py-2 border-l-2 border-red-500/50">
                     <blockquote className="italic text-zinc-300 text-[15px] leading-relaxed">
-                      "{flag.quote}"
+                      &quot;{flag.quote}&quot;
                     </blockquote>
                   </div>
                   <div className="p-3 rounded-xl bg-[#0A0A0A] border border-zinc-800/80 flex items-start gap-3">

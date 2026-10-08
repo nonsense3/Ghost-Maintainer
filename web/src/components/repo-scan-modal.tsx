@@ -60,14 +60,16 @@ export function RepoScanModal({
 
   useEffect(() => {
     if (!isOpen) {
-      setCurrentStage(1);
-      setProgress(12);
-      setIsDone(false);
-      setShowLogs(false);
-      setLogs([
-        "[INIT] Initializing Ghost Maintainer telemetry scanner…",
-        `[TARGET] Lock acquired on repository: ${repoName}`,
-      ]);
+      setTimeout(() => {
+        setCurrentStage(1);
+        setProgress(12);
+        setIsDone(false);
+        setShowLogs(false);
+        setLogs([
+          "[INIT] Initializing Ghost Maintainer telemetry scanner…",
+          `[TARGET] Lock acquired on repository: ${repoName}`,
+        ]);
+      }, 0);
       return;
     }
 

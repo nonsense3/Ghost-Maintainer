@@ -5,16 +5,14 @@ import snowflake from "snowflake-sdk";
 export async function GET() {
   let supabaseOk = false;
   let supabaseError = null;
-  let usersCount = 0;
 
   try {
     const admin = createAdminClient();
-    const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1 });
+    const { error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1 });
     if (error) {
       supabaseError = error.message;
     } else {
       supabaseOk = true;
-      usersCount = data?.users?.length ?? 0;
     }
   } catch (err: unknown) {
     supabaseError = err instanceof Error ? err.message : String(err);
@@ -23,7 +21,6 @@ export async function GET() {
   // Snowflake connection test
   let snowflakeOk = false;
   let snowflakeError = null;
-  let snowflakeInfo = null;
 
   try {
     const account = process.env.SNOWFLAKE_ACCOUNT;
@@ -48,11 +45,10 @@ export async function GET() {
           if (err) return reject(err);
           conn.execute({
             sqlText: "SELECT CURRENT_USER(), CURRENT_WAREHOUSE(), CURRENT_DATABASE(), CURRENT_SCHEMA()",
-            complete: (qErr, _stmt, rows) => {
-              conn.destroy((_dErr) => {});
+            complete: (qErr) => {
+              conn.destroy(() => {});
               if (qErr) return reject(qErr);
               snowflakeOk = true;
-              snowflakeInfo = rows?.[0] || null;
               resolve(true);
             },
           });

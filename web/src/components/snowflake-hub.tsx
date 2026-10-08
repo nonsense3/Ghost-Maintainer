@@ -4,13 +4,11 @@ import { useState } from "react";
 
 interface SnowflakeHubProps {
   repositoryId: string;
-  fullName: string;
   initialSql: string;
 }
 
 export function SnowflakeHub({
   repositoryId,
-  fullName,
   initialSql,
 }: SnowflakeHubProps) {
   const [open, setOpen] = useState(false);

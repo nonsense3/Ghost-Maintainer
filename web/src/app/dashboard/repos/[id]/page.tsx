@@ -152,7 +152,6 @@ export default async function RepoDetailPage({ params }: Params) {
         {/* Snowflake Zero-Egress Analytics & Cortex Hub */}
         <SnowflakeHub
           repositoryId={id}
-          fullName={repo.full_name}
           initialSql={generateSnowflakeAnalysisSql(repo.full_name)}
         />
 

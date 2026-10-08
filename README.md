@@ -1,3 +1,7 @@
+![Uploading logo.png…]()
+
+
+
 # Ghost Maintainer
 
 > Predict open-source supply chain compromises before they happen — by monitoring the humans behind the code.

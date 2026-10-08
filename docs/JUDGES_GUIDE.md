@@ -29,7 +29,7 @@ This document maps how Ghost Maintainer fulfills each hackathon track requiremen
 ### Highlights:
 - **Complex SQL Generation:** Copilot accelerated author tenure calculation, 24-hour distribution histograms ($L_1$ drift), and issue first-reply delay Z-scores in [`sql/04_behavior_signals.sql`](../sql/04_behavior_signals.sql).
 - **GitHub Ingest Pipeline:** Multi-endpoint pagination with rate-limit backoff across Commits, Pull Requests, Issues, and Issue Comments in [`web/src/lib/github/ingest.ts`](../web/src/lib/github/ingest.ts).
-- **Design System Fidelity:** Translating the 563-line [`DESIGN-apple.md`](../DESIGN-apple.md) into Tailwind tokens and typography clamp curves.
+- **Design System Fidelity:** Translating design specifications into Tailwind tokens and typography clamp curves.
 
 ---
 

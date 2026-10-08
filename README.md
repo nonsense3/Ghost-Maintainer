@@ -265,7 +265,6 @@ Ghost Maintainer will automatically connect to the local Ollama instance at `htt
 | [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | System diagram, risk formulas, data flow, and behavioral signal mathematics |
 | [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md) | Structured presentation walkthrough |
 | [`docs/JUDGES_GUIDE.md`](./docs/JUDGES_GUIDE.md) | Track-by-track criteria with code references |
-| [`DESIGN-apple.md`](./DESIGN-apple.md) | Design system specification |
 | [`sql/README.md`](./sql/README.md) | SQL layer documentation |
 
 ---

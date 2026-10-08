@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: ghost-maintainer
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: web
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GEMMA_API_KEY
+        sync: false
+      - key: GEMMA_API_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta/openai
+      - key: GEMMA_MODEL
+        value: gemma-4-26b-a4b-it
+      - key: SNOWFLAKE_ACCOUNT
+        sync: false
+      - key: SNOWFLAKE_USER
+        sync: false
+      - key: SNOWFLAKE_PASSWORD
+        sync: false
+      - key: SNOWFLAKE_WAREHOUSE
+        value: COMPUTE_WH
+      - key: SNOWFLAKE_DATABASE
+        value: GHOST_MAINTAINER
+      - key: SNOWFLAKE_SCHEMA
+        value: ANALYTICS

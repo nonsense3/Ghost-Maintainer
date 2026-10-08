@@ -51,28 +51,6 @@
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
 }
-@keyframes geminiShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-@keyframes geminiPulseAura {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.55;
-  }
-  50% {
-    transform: scale(1.12);
-    opacity: 0.85;
-  }
-}
-@keyframes geminiFloat {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(6deg);
-  }
-}
 
 .animate-scrolling {
   animation: scroll 40s linear infinite;
@@ -80,19 +58,6 @@
 
 .animate-fade-in-up {
   animation: fadeIn 1s ease-out forwards;
-}
-
-.animate-gemini-shimmer {
-  background-size: 200% 100%;
-  animation: geminiShimmer 2.5s ease-in-out infinite;
-}
-
-.animate-gemini-aura {
-  animation: geminiPulseAura 3.5s ease-in-out infinite;
-}
-
-.animate-gemini-float {
-  animation: geminiFloat 3s ease-in-out infinite;
 }
 
 body {

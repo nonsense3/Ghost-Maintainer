@@ -12,8 +12,6 @@ const bodySchema = z.object({
   name: z.string().min(1),
 });
 
-import { ratelimit } from "@/lib/rate-limit";
-
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {
@@ -22,21 +20,6 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // OWASP A04: API Rate Limiting
-  const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
-  try {
-    const { success } = await ratelimit.limit(ip);
-    if (!success) {
-      return NextResponse.json(
-        { error: "Too many repository scan requests. Please try again later." },
-        { status: 429 }
-      );
-    }
-  } catch (e) {
-    // If Redis is not configured (UPSTASH_REDIS_REST_URL is missing), we'll gracefully pass
-    console.warn("Rate limiting failed (Upstash Redis might not be configured):", e);
   }
 
 

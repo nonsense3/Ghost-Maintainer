@@ -3,7 +3,13 @@ import { storeUserGitHubToken } from "@/lib/github/token";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams, origin: fallbackOrigin } = new URL(request.url);
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  const origin = forwardedHost
+    ? `${forwardedProto}://${forwardedHost}`
+    : (process.env.NEXT_PUBLIC_APP_URL ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "") : fallbackOrigin);
+
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
 

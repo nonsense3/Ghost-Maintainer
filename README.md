@@ -224,38 +224,6 @@ Ghost Maintainer will automatically connect to the local Ollama instance at `htt
 
 ---
 
-## Project Structure
-
-```
-Ghost-Maintainer/
-├── cli/
-│   ├── scan.py                 # Python CLI — Gemma + Ollama scanner
-│   └── scan.mjs                # Node.js CLI — zero-dependency scanner
-├── docs/
-│   ├── ARCHITECTURE.md         # System architecture & math specifications
-│   ├── DEMO_SCRIPT.md          # Presentation script
-│   └── JUDGES_GUIDE.md         # Track criteria mapping
-├── fetcher/
-│   ├── fetch_github.py         # Paginated GitHub data ingestion
-│   ├── load_snowflake.py       # Snowflake VARIANT loader
-│   └── requirements.txt        # Python dependencies
-├── sql/
-│   ├── 01_tables.sql           # DDL for Snowflake & PostgreSQL
-│   ├── 02_flatten_views.sql    # JSON normalization views
-│   ├── 03_cortex_scoring.sql   # Snowflake Cortex AI Gemma scoring
-│   ├── 04_behavior_signals.sql # Window functions for 5 behavioral signals
-│   └── 05_risk_score.sql       # Combined risk calculation view
-├── supabase/
-│   └── migrations/             # Version-controlled database migrations
-├── web/
-│   ├── src/app/                # Next.js 16 App Router pages
-│   ├── src/components/         # UI components
-│   └── src/lib/                # Gemma evaluation, analytics & database clients
-├── DESIGN-apple.md             # Design system specification
-└── package.json                # Root project scripts
-```
-
----
 
 ## Tech Stack
 

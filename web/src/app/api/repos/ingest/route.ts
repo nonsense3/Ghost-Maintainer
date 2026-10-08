@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getRepository } from "@/lib/github/client";
 import { collectRepositoryEvents } from "@/lib/github/ingest";
 import { getUserGitHubToken } from "@/lib/github/token";
+import { syncRepositoryToSnowflake } from "@/lib/snowflake/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -102,6 +103,13 @@ export async function POST(request: Request) {
       if (ingestError) {
         return NextResponse.json({ error: ingestError.message }, { status: 500 });
       }
+    }
+
+    // Automatically replicate to Snowflake Zero-Egress storage
+    try {
+      await syncRepositoryToSnowflake(repoRow.id);
+    } catch (sErr) {
+      console.warn("[Snowflake Ingest Sync Warning]:", sErr);
     }
 
     return NextResponse.json({

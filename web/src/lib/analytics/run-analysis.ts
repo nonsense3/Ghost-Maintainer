@@ -7,6 +7,7 @@ import {
   computeBehaviorSignals,
 } from "./behavior";
 import { eventTextForScoring, flattenEvent } from "./events";
+import { syncRepositoryToSnowflake } from "@/lib/snowflake/client";
 
 const SCORE_BATCH = 15;
 
@@ -123,6 +124,13 @@ export async function runRepositoryAnalysis(repositoryId: string) {
     },
     { onConflict: "repository_id,week_start" },
   );
+
+  // Sync latest risk scores, comments and signals to Snowflake
+  try {
+    await syncRepositoryToSnowflake(repositoryId);
+  } catch (sErr) {
+    console.warn("[Snowflake Analysis Sync Warning]:", sErr);
+  }
 
   return {
     week_start,

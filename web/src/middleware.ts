@@ -45,10 +45,9 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/login") ||
     request.nextUrl.pathname.startsWith("/auth");
   const isProtected =
-    (request.nextUrl.pathname.startsWith("/dashboard") ||
-      request.nextUrl.pathname.startsWith("/api/repos/") ||
-      request.nextUrl.pathname === "/api/repos/ingest") &&
-    !request.nextUrl.pathname.includes("/demo-");
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/api/repos/") ||
+    request.nextUrl.pathname === "/api/repos/ingest";
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();

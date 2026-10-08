@@ -27,11 +27,18 @@ export function SnowflakeHub({
       });
       const data = await res.json();
       if (!res.ok) {
-        setSyncStatus(data.error ?? "Snowflake synchronization failed");
+        setSyncStatus(`✗ Snowflake error: ${data.error ?? "Synchronization failed"}`);
       } else {
-        setSyncStatus(
-          `✓ Zero-Egress sync verified: ${data.events_staged} events formatted for GHOST_MAINTAINER.ANALYTICS.`
-        );
+        const sync = data.sync;
+        if (sync) {
+          setSyncStatus(
+            `✓ Live Snowflake Zero-Egress Sync Verified: ${sync.total_events_in_snowflake} events, ${sync.total_comments_in_snowflake} scored comments, and ${sync.total_signals_in_snowflake} behavior signals active in GHOST_MAINTAINER.ANALYTICS.`
+          );
+        } else {
+          setSyncStatus(
+            `✓ Zero-Egress sync verified: ${data.events_staged} events formatted for GHOST_MAINTAINER.ANALYTICS.`
+          );
+        }
       }
     } catch {
       setSyncStatus("Connection established. Zero-egress worksheet ready.");

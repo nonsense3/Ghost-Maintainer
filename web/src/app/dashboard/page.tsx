@@ -7,26 +7,6 @@ import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
 
 
-const PRESET_DEMO_REPOS = [
-  {
-    id: "demo-xz",
-    fullName: "xz/xz-utils",
-    tagline: "2024 Social Engineering Backdoor Takeover (CVE-2024-3094)",
-    riskScore: 86,
-    band: "high",
-    signalsCount: 5,
-    flaggedComments: 3,
-  },
-  {
-    id: "demo-flask",
-    fullName: "pallets/flask",
-    tagline: "Healthy Active Multi-Maintainer Foundation Reference",
-    riskScore: 13,
-    band: "low",
-    signalsCount: 0,
-    flaggedComments: 0,
-  },
-];
 
 export default async function DashboardPage() {
   let user: {
@@ -150,59 +130,6 @@ export default async function DashboardPage() {
           </div>
         ) : null}
 
-        {/* 1. Preset Case Studies Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-display-md text-ink font-semibold">
-                Preset Incident Studies
-              </h2>
-              <p className="text-caption text-ink-muted-80">
-                Explore pre-computed audit reports for historic supply chain incidents.
-              </p>
-            </div>
-            <span className="text-caption-strong text-primary font-mono text-xs uppercase tracking-wider">
-              PRD Benchmark
-            </span>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2">
-            {PRESET_DEMO_REPOS.map((demo) => {
-              const isHigh = demo.band === "high";
-              return (
-                <Link
-                  key={demo.id}
-                  href={`/dashboard/repos/${demo.id}`}
-                  className="store-utility-card block hover:border-primary transition-all p-6 bg-canvas"
-                >
-                  <div className="flex items-center justify-between">
-                    <p className="text-body-strong text-ink">{demo.fullName}</p>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                        isHigh
-                          ? "bg-red-100 text-red-800 border border-red-200"
-                          : "bg-blue-100 text-blue-800 border border-blue-200"
-                      }`}
-                    >
-                      Risk {demo.riskScore} ({demo.band.toUpperCase()})
-                    </span>
-                  </div>
-                  <p className="text-caption text-ink-muted-80 mt-2">
-                    {demo.tagline}
-                  </p>
-                  <div className="mt-4 pt-3 border-t border-hairline flex items-center justify-between text-caption text-ink-muted-48">
-                    <span>
-                      {isHigh ? "Elevated behavioral drift" : "Stable baseline"}
-                    </span>
-                    <span className="text-primary font-medium">
-                      View full report →
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
 
         {/* 2. Tracked Repositories Section */}
         <section className="space-y-6">

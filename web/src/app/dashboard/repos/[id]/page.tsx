@@ -1,7 +1,7 @@
 export const instant = false;
 
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AnalyzeButton } from "@/components/analyze-button";
 import { ExplainScorePanel } from "@/components/explain-score-panel";
 import { GlobalNav } from "@/components/global-nav";
@@ -12,10 +12,7 @@ import { SnowflakeHub } from "@/components/snowflake-hub";
 import { generateSnowflakeAnalysisSql } from "@/lib/snowflake/client";
 import { createClient } from "@/lib/supabase/server";
 
-
 type Params = { params: Promise<{ id: string }> };
-
-
 
 export default async function RepoDetailPage({ params }: Params) {
   const { id } = await params;
@@ -42,6 +39,13 @@ export default async function RepoDetailPage({ params }: Params) {
 
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      redirect(`/login?next=/dashboard/repos/${id}`);
+    }
 
     const { data: dbRepo } = await supabase
       .from("repositories")
@@ -75,7 +79,10 @@ export default async function RepoDetailPage({ params }: Params) {
       .order("risk_score", { ascending: false })
       .limit(12);
     commentScores = (dbComments as typeof commentScores) ?? [];
-  } catch {
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "digest" in err) {
+      throw err;
+    }
     notFound();
   }
 

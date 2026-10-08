@@ -1,12 +1,11 @@
 export const instant = false;
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AddRepoForm } from "@/components/add-repo-form";
 import { GlobalNav } from "@/components/global-nav";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
-
-
 
 export default async function DashboardPage() {
   let user: {
@@ -17,8 +16,6 @@ export default async function DashboardPage() {
   let repos: Array<{ id: string; full_name: string; created_at: string }> | null =
     null;
   const riskByRepo = new Map<string, { risk_score: number; band: string }>();
-  let hasSupabase = false;
-  
 
   try {
     const supabase = await createClient();
@@ -26,9 +23,10 @@ export default async function DashboardPage() {
       data: { user: authUser },
     } = await supabase.auth.getUser();
     user = authUser;
-    hasSupabase = true;
 
-    
+    if (!user) {
+      redirect("/login?next=/dashboard");
+    }
 
     const { data: dbRepos } = await supabase
       .from("repositories")
@@ -53,8 +51,11 @@ export default async function DashboardPage() {
         });
       }
     }
-  } catch {
-    hasSupabase = false;
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "digest" in err) {
+      throw err; // Re-throw Next.js redirect
+    }
+    redirect("/login?next=/dashboard");
   }
 
   return (
@@ -121,14 +122,7 @@ export default async function DashboardPage() {
               <div className="flex items-center gap-3"><div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 font-medium"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />Maintainer Connected</div></div>
             </div>
           );
-        })() : !hasSupabase ? (
-          <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-caption text-blue-900">
-            <span className="font-semibold">Demo Sandbox Active:</span> Supabase
-            environment credentials not configured yet. You can explore complete
-            interactive incident telemetry below or connect your Supabase database
-            via <code className="font-mono bg-blue-100 px-1 py-0.5 rounded">web/.env.local</code>.
-          </div>
-        ) : null}
+        })() : null}
 
 
         {/* 2. Tracked Repositories Section */}

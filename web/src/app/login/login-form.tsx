@@ -1,11 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   loginWithEmailAction,
   signUpWithEmailAction,
-  quickMaintainerLoginAction,
 } from "./actions";
 
 interface LoginFormProps {
@@ -47,7 +46,7 @@ export function LoginForm({ initialError, nextPath = "/dashboard" }: LoginFormPr
           error.message.includes("validation_failed")
         ) {
           setMessage(
-            `Supabase GitHub OAuth provider is not yet enabled in your Supabase project (Project Dashboard -> Authentication -> Providers -> GitHub). Enable it or use Email sign-in / Quick Access below.`
+            `Supabase GitHub OAuth provider is not yet enabled in your Supabase project (Project Dashboard -> Authentication -> Providers -> GitHub). Please enable it or sign in with your email and password below.`
           );
         } else {
           setMessage(error.message);
@@ -79,17 +78,6 @@ export function LoginForm({ initialError, nextPath = "/dashboard" }: LoginFormPr
           ? await signUpWithEmailAction(formData)
           : await loginWithEmailAction(formData);
 
-      if (res?.error) {
-        setMessage(res.error);
-      }
-    });
-  }
-
-  // 3. Fallback Quick Demo Sign-in
-  function onQuickLogin() {
-    setMessage(null);
-    startTransition(async () => {
-      const res = await quickMaintainerLoginAction(nextPath);
       if (res?.error) {
         setMessage(res.error);
       }
@@ -192,16 +180,6 @@ export function LoginForm({ initialError, nextPath = "/dashboard" }: LoginFormPr
           {mode === "signin"
             ? "Need an account? Sign up"
             : "Already have an account? Sign in"}
-        </button>
-
-        {/* Quick Demo Access Fallback */}
-        <button
-          type="button"
-          onClick={onQuickLogin}
-          disabled={isPending || isOAuthLoading}
-          className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1.5 pt-2 border-t border-zinc-800/80 w-full justify-center cursor-pointer"
-        >
-          <span>&rarr;</span> Quick Maintainer Demo Access (1-Click)
         </button>
       </div>
     </div>

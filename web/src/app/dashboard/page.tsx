@@ -4,8 +4,8 @@ import Link from "next/link";
 import { AddRepoForm } from "@/components/add-repo-form";
 import { GlobalNav } from "@/components/global-nav";
 import { createClient } from "@/lib/supabase/server";
-import { signOut, saveUserGitHubToken } from "./actions";
-import { getUserGitHubToken } from "@/lib/github/token";
+import { signOut } from "./actions";
+
 
 const PRESET_DEMO_REPOS = [
   {
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
     null;
   const riskByRepo = new Map<string, { risk_score: number; band: string }>();
   let hasSupabase = false;
-  let userGitHubToken: string | null = null;
+  
 
   try {
     const supabase = await createClient();
@@ -48,9 +48,7 @@ export default async function DashboardPage() {
     user = authUser;
     hasSupabase = true;
 
-    if (authUser) {
-      userGitHubToken = await getUserGitHubToken(authUser.id);
-    }
+    
 
     const { data: dbRepos } = await supabase
       .from("repositories")
@@ -140,27 +138,7 @@ export default async function DashboardPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                {userGitHubToken ? (
-                  <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    GitHub Token Stored &amp; Active
-                  </div>
-                ) : (
-                  <form action={saveUserGitHubToken} className="flex items-center gap-2">
-                    <input
-                      type="password"
-                      name="github_token"
-                      placeholder="Enter GitHub Token (ghp_...)"
-                      className="search-input text-xs py-1.5 px-3 w-52 font-mono"
-                      required
-                    />
-                    <button type="submit" className="btn-dark-utility text-xs py-1.5">
-                      Save Key
-                    </button>
-                  </form>
-                )}
-              </div>
+              <div className="flex items-center gap-3"><div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 font-medium"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />Maintainer Connected</div></div>
             </div>
           );
         })() : !hasSupabase ? (
@@ -276,3 +254,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+

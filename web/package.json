@@ -16,6 +16,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1",
+    "snowflake-sdk": "^3.4.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {

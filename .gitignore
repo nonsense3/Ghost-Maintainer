@@ -13,5 +13,7 @@ venv/
 prd-pages/
 prd-extract.txt
 *.png
+!web/public/*.png
+*.log
 .DS_Store
 Thumbs.db

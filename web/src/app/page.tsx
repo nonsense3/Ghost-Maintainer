@@ -1,4 +1,5 @@
-import Link from "next/link";
+﻿import Link from "next/link";
+import Image from "next/image";
 import { DemoComparison } from "@/components/demo-comparison";
 import { DependencyScannerCard } from "@/components/dependency-scanner-card";
 import { GlobalNav } from "@/components/global-nav";
@@ -197,7 +198,7 @@ export default function HomePage() {
         <div className="w-full flex flex-col md:flex-row items-center justify-between gap-8 text-sm text-zinc-500">
           <div className="text-center md:text-left">
             <p className="font-medium text-zinc-300 mb-1 flex items-center gap-2 justify-center md:justify-start">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block"></span>
+              <Image src="/logo.png" alt="Ghost Maintainer" width={20} height={20} className="w-5 h-5 rounded object-contain" />
               Ghost Maintainer
             </p>
             <p className="font-light">
@@ -215,3 +216,4 @@ export default function HomePage() {
     </div>
   );
 }
+

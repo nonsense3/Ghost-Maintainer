@@ -155,6 +155,12 @@ def main() -> None:
     parser.add_argument("--out", default=None, help="Custom output cache path")
     args = parser.parse_args()
 
+    import re
+    repo_regex = re.compile(r"^[a-zA-Z0-9_.-]+$")
+    if not repo_regex.match(args.owner) or not repo_regex.match(args.name):
+        print("[!] Error: Invalid owner or repository name. Name can only contain alphanumeric characters, hyphens, underscores, and periods.", file=sys.stderr)
+        sys.exit(1)
+
     events = fetch_repository_events(args.owner, args.name)
     print(f"[✓] Retrieved {len(events)} events for {args.owner}/{args.name}")
 

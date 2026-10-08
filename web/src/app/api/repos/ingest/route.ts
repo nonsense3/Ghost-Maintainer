@@ -58,6 +58,12 @@ export async function POST(request: Request) {
       name = parts[1].replace(/\.git$/i, "");
     }
   }
+  
+  // OWASP A10: SSRF Prevention & Input Validation
+  const repoRegex = /^[a-zA-Z0-9_.-]+$/;
+  if (!repoRegex.test(owner) || !repoRegex.test(name)) {
+    return NextResponse.json({ error: "Invalid repository owner or name format" }, { status: 400 });
+  }
 
   try {
     // Resolve user's stored OAuth token or fallback

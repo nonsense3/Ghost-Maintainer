@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { JsonLd } from "@/components/json-ld";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ghost-maintainer.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ghost-maintainer.onrender.com";
 
 export const viewport: Viewport = {
   themeColor: "#0A0A0A",

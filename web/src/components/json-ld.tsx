@@ -17,8 +17,8 @@ export function JsonLd() {
     "license": "https://opensource.org/licenses/MIT",
     "author": {
       "@type": "Organization",
-      "name": "Ghost Maintainer Team",
-      "url": "https://github.com/nonsense3/Ghost-Maintainer"
+      "name": "Ghost Maintainer Core Team",
+      "url": "https://ghost-maintainer.onrender.com"
     },
     "featureList": [
       "Gemma 4B Linguistic Burnout Analysis",

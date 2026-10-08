@@ -61,15 +61,13 @@ export default function HomePage() {
               Start Analysis
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <a
-              href="https://github.com/nonsense3/Ghost-Maintainer"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/cli"
               className="px-6 py-3 rounded-lg bg-zinc-900/80 border border-zinc-800 text-zinc-300 font-medium hover:bg-zinc-800 hover:text-white transition-all flex items-center gap-2 w-full sm:w-auto justify-center backdrop-blur-sm"
             >
               <Terminal className="w-4 h-4" />
-              Documentation
-            </a>
+              CLI Guide & Docs
+            </Link>
           </div>
         </section>
 

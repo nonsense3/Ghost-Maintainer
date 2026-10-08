@@ -6,6 +6,7 @@ export function GlobalNav({ right }: { right?: React.ReactNode }) {
     { to: "/#demo", label: "Incident Triage" },
     { to: "/#scanner", label: "Dependency Scanner" },
     { to: "/#sql", label: "SQL Engine" },
+    { to: "/cli", label: "CLI Guide" },
     { to: "/dashboard", label: "Live Dashboard" },
   ];
 

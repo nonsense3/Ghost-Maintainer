@@ -30,7 +30,7 @@ function loadEnv() {
         if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
           const [k, ...rest] = trimmed.split("=");
           const val = rest.join("=").trim().replace(/^["']|["']$/g, "");
-          if (!process.env[k.trim()] && val) {
+          if ((!process.env[k.trim()] || process.env[k.trim()].trim() === "") && val) {
             process.env[k.trim()] = val;
           }
         }
@@ -411,8 +411,11 @@ if (args.length === 0 || args[0] === "demo") {
   const tokenIdx = args.indexOf("--token");
   const token = tokenIdx !== -1 ? args[tokenIdx + 1] : process.env.GITHUB_TOKEN;
   scanRepo(target, token).catch((err) => {
-    console.error(`[-] Scan failed:`, err.message);
-    process.exit(1);
+    console.error(`\n\x1b[31m[-] Scan failed:\x1b[0m`, err.message);
+    if (err.message.includes("404")) {
+      console.log(`\x1b[33m[!] Tip: Repository not found on GitHub. Please check spelling (e.g. underscore '_' vs hyphen '-').\x1b[0m\n`);
+    }
+    process.exitCode = 1;
   });
 } else {
   console.log("Usage: node cli/scan.mjs [demo | scan <owner>/<repo> | scan-deps --file <path>]");

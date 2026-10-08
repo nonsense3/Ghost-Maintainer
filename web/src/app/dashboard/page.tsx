@@ -1,5 +1,12 @@
 export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Live Dashboard & Repository Triage",
+  description: "Monitor GitHub repository maintainer risk scores, behavioral signal metrics, and Gemma 4B security flags in real-time.",
+};
+
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AddRepoForm } from "@/components/add-repo-form";

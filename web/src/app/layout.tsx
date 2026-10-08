@@ -1,10 +1,76 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { JsonLd } from "@/components/json-ld";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ghost-maintainer.vercel.app";
+
+export const viewport: Viewport = {
+  themeColor: "#0A0A0A",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Ghost Maintainer",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Ghost Maintainer — AI Open Source Supply Chain Risk & Burnout Intelligence",
+    template: "%s | Ghost Maintainer",
+  },
   description:
-    "Warn when an open-source library is dying, abandoned, or quietly hijacked.",
+    "Predict open-source supply chain compromises, account takeovers, and maintainer burnout before the CVE is published. Powered by Gemma 4B LLM and SQL window functions.",
+  keywords: [
+    "ghost maintainer",
+    "open source security",
+    "supply chain attack prevention",
+    "xz-utils backdoor",
+    "CVE-2024-3094",
+    "maintainer burnout triage",
+    "Gemma 4B AI",
+    "OWASP top 10 security",
+    "pre-CVE vulnerability scanner",
+    "GitHub risk scoring",
+    "Snowflake SQL analytics",
+    "package.json security audit",
+  ],
+  authors: [{ name: "Ghost Maintainer Core Team", url: "https://github.com/nonsense3/Ghost-Maintainer" }],
+  creator: "Ghost Maintainer Team",
+  publisher: "Ghost Maintainer",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    title: "Ghost Maintainer — AI Supply Chain & Maintainer Burnout Intelligence",
+    description:
+      "Predict open-source supply chain compromises, account takeovers, and maintainer burnout before the CVE is published. Powered by Gemma 4B and SQL analytics.",
+    siteName: "Ghost Maintainer",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Ghost Maintainer AI Supply Chain Intelligence Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ghost Maintainer — Pre-CVE Supply Chain AI Intelligence",
+    description:
+      "Predict open-source supply chain compromises and maintainer burnout before code is merged. Powered by Gemma 4B and SQL window functions.",
+    images: ["/logo.png"],
+    creator: "@ghostmaintainer",
+  },
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" },
@@ -12,6 +78,9 @@ export const metadata: Metadata = {
     ],
     apple: "/favicon.png",
     shortcut: "/favicon.png",
+  },
+  alternates: {
+    canonical: siteUrl,
   },
 };
 
@@ -21,13 +90,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <link rel="icon" href="/favicon.png" type="image/png" />
+        <JsonLd />
       </head>
       <body className="antialiased bg-[#0A0A0A] text-zinc-50 relative min-h-screen">
         {/* Global Blurry Gridline & Ambient Glow Layer */}
-        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
           {/* Ambient Glowing Orbs */}
           <div className="absolute -top-[15%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-tr from-indigo-600/20 via-purple-600/15 to-red-600/10 blur-[130px] rounded-full opacity-80" />
           <div className="absolute top-[35%] -left-[10%] w-[600px] h-[600px] bg-indigo-900/15 blur-[140px] rounded-full opacity-60" />

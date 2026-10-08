@@ -1,22 +1,40 @@
 import "server-only";
 import { z } from "zod";
 
+const emptyToUndefined = (val: unknown) =>
+  typeof val === "string" && val.trim() === "" ? undefined : val;
+
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  GITHUB_TOKEN: z.string().min(1).optional(),
-  OLLAMA_HOST: z.string().url().default("http://127.0.0.1:11434"),
-  OLLAMA_API_KEY: z.string().min(1).optional(),
-  GEMMA_MODEL: z.string().default("gemma:4b"),
-  GEMMA_API_KEY: z.string().min(1).optional(),
-  GEMMA_API_BASE_URL: z.string().url().optional(),
+  GITHUB_TOKEN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  OLLAMA_HOST: z.preprocess(
+    emptyToUndefined,
+    z.string().url().default("http://127.0.0.1:11434"),
+  ),
+  OLLAMA_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
+  GEMMA_MODEL: z.preprocess(
+    emptyToUndefined,
+    z.string().default("gemma-4-26b-a4b-it"),
+  ),
+  GEMMA_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
+  GEMMA_API_BASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
 
   // Snowflake Zero-Egress Storage (PRD Track 3)
-  SNOWFLAKE_ACCOUNT: z.string().optional(),
-  SNOWFLAKE_USER: z.string().optional(),
-  SNOWFLAKE_PASSWORD: z.string().optional(),
-  SNOWFLAKE_WAREHOUSE: z.string().default("COMPUTE_WH"),
-  SNOWFLAKE_DATABASE: z.string().default("GHOST_MAINTAINER"),
-  SNOWFLAKE_SCHEMA: z.string().default("ANALYTICS"),
+  SNOWFLAKE_ACCOUNT: z.preprocess(emptyToUndefined, z.string().optional()),
+  SNOWFLAKE_USER: z.preprocess(emptyToUndefined, z.string().optional()),
+  SNOWFLAKE_PASSWORD: z.preprocess(emptyToUndefined, z.string().optional()),
+  SNOWFLAKE_WAREHOUSE: z.preprocess(
+    emptyToUndefined,
+    z.string().default("COMPUTE_WH"),
+  ),
+  SNOWFLAKE_DATABASE: z.preprocess(
+    emptyToUndefined,
+    z.string().default("GHOST_MAINTAINER"),
+  ),
+  SNOWFLAKE_SCHEMA: z.preprocess(
+    emptyToUndefined,
+    z.string().default("ANALYTICS"),
+  ),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

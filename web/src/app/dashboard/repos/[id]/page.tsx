@@ -1,4 +1,4 @@
-export const instant = false;
+export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";

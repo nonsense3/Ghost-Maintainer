@@ -322,7 +322,7 @@ INSERT INTO raw_github_events (repository_id, source, external_id, occurred_at, 
 SELECT 
     r.id,
     'commit',
-    'evt-${Date.now()}',
+    'evt-' || UUID_STRING(),
     CURRENT_TIMESTAMP(),
     PARSE_JSON('${sampleDataJson.replace(/'/g, "''")}')
 FROM repositories r

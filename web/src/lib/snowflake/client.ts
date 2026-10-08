@@ -32,6 +32,15 @@ export function getSnowflakeConfig(): SnowflakeConfig {
 }
 
 /**
+ * Safely masks Snowflake account identifiers to prevent sensitive credential disclosure.
+ */
+export function maskSnowflakeAccount(account?: string): string {
+  if (!account) return "Configured (Zero-Egress Secured)";
+  if (account.length <= 6) return "••••••";
+  return `${account.slice(0, 4)}••••••${account.slice(-2)}`;
+}
+
+/**
  * Creates an authenticated connection to Snowflake using server environment variables.
  */
 function createSnowflakeConnection() {
@@ -165,13 +174,13 @@ export async function syncRepositoryToSnowflake(repositoryId: string) {
 
     const toInsert = events.filter((e) => !existingIds.has(e.external_id));
 
-    // Batch in chunks of 35 for high-speed Snowflake ingestion
+    // Batch in chunks of 35 for high-speed Snowflake ingestion using valid UNION ALL expressions
     const CHUNK_SIZE = 35;
     for (let i = 0; i < toInsert.length; i += CHUNK_SIZE) {
       const chunk = toInsert.slice(i, i + CHUNK_SIZE);
-      const valueClauses = chunk
-        .map(() => "(?, ?, ?, TO_TIMESTAMP_NTZ(?), PARSE_JSON(?))")
-        .join(", ");
+      const selectClauses = chunk
+        .map(() => "SELECT ?, ?, ?, TO_TIMESTAMP_NTZ(?), PARSE_JSON(?)")
+        .join(" UNION ALL ");
       const binds: snowflake.Bind[] = [];
       for (const ev of chunk) {
         binds.push(
@@ -183,9 +192,7 @@ export async function syncRepositoryToSnowflake(repositoryId: string) {
         );
       }
       await executeSnowflake(
-        `INSERT INTO raw_github_events (repository_id, source, external_id, occurred_at, payload)
-         SELECT column1, column2, column3, column4, column5
-         FROM (VALUES ${valueClauses})`,
+        `INSERT INTO raw_github_events (repository_id, source, external_id, occurred_at, payload) ${selectClauses}`,
         binds,
       );
       newEventsInserted += chunk.length;

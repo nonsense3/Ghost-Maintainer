@@ -98,34 +98,58 @@ export function SnowflakeHub({
       {/* Connection & Telemetry Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
         <div className="p-3 rounded-xl bg-canvas-parchment/60 border border-hairline/60">
-          <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider mb-1 font-sans">
-            Account
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider font-sans">
+              Snowflake Account
+            </p>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/20">
+              Secured
+            </span>
+          </div>
+          <p className="text-ink font-semibold truncate flex items-center gap-1.5">
+            <span className="text-cyan-400 text-xs">🔒</span>
+            <span className="tracking-wider">sosb••••••49</span>
           </p>
-          <p className="text-ink font-semibold truncate">sosbytk-aj02649</p>
         </div>
         <div className="p-3 rounded-xl bg-canvas-parchment/60 border border-hairline/60">
-          <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider mb-1 font-sans">
-            Warehouse
-          </p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider font-sans">
+              Warehouse
+            </p>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-400 font-mono border border-cyan-500/20">
+              Active
+            </span>
+          </div>
           <p className="text-cyan-400 font-semibold truncate">COMPUTE_WH</p>
         </div>
         <div className="p-3 rounded-xl bg-canvas-parchment/60 border border-hairline/60">
-          <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider mb-1 font-sans">
-            Target DB & Schema
-          </p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider font-sans">
+              Target DB & Schema
+            </p>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-500/10 text-indigo-400 font-mono border border-indigo-500/20">
+              In-Perimeter
+            </span>
+          </div>
           <p className="text-ink font-semibold truncate">GHOST_MAINTAINER.ANALYTICS</p>
         </div>
         <div className="p-3 rounded-xl bg-canvas-parchment/60 border border-hairline/60">
-          <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider mb-1 font-sans">
-            In-Warehouse Model
-          </p>
-          <p className="text-emerald-400 font-semibold truncate">Cortex gemma-7b</p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[11px] text-ink-muted-48 uppercase tracking-wider font-sans">
+              In-Warehouse Model
+            </p>
+            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 font-mono border border-emerald-500/20">
+              Cortex
+            </span>
+          </div>
+          <p className="text-emerald-400 font-semibold truncate">gemma-7b (Zero-Egress)</p>
         </div>
       </div>
 
       {syncStatus && (
-        <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-xs text-cyan-200 font-mono">
-          {syncStatus}
+        <div className="p-3.5 rounded-xl bg-cyan-950/40 border border-cyan-800/60 text-xs text-cyan-200 font-mono flex items-center gap-2">
+          <span className="text-cyan-400 text-sm">✦</span>
+          <span>{syncStatus}</span>
         </div>
       )}
 

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   generateSnowflakeAnalysisSql,
   getSnowflakeConfig,
+  maskSnowflakeAccount,
   syncRepositoryToSnowflake,
 } from "@/lib/snowflake/client";
 import { NextResponse } from "next/server";
@@ -43,7 +44,7 @@ export async function POST(_request: Request, { params }: Params) {
       sync: syncResult,
       events_staged: syncResult.total_events_in_snowflake,
       snowflake: {
-        account: config.account ?? "sosbytk-aj02649",
+        account: maskSnowflakeAccount(config.account),
         warehouse: config.warehouse,
         database: config.database,
         schema: config.schema,

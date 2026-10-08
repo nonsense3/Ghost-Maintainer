@@ -14,6 +14,7 @@ prd-pages/
 prd-extract.txt
 *.png
 !web/public/*.png
+!docs/images/*.png
 *.log
 .DS_Store
 Thumbs.db

@@ -1,6 +1,6 @@
-
-
-
+<p align="center">
+  <img src="docs/images/ghost-maintainer-logo.png" alt="Ghost Maintainer Logo" width="550" />
+</p>
 
 # Ghost Maintainer
 
@@ -9,6 +9,10 @@
 Ghost Maintainer is an AI-powered security intelligence tool that detects maintainer burnout, social engineering, and account takeover risk in open-source projects. It combines **Gemma 4B** linguistic analysis of maintainer communications with **statistical behavioral signals** computed via pure SQL window functions to produce a unified risk score (0–100) for any GitHub repository.
 
 Unlike dependency scanners that react after a vulnerability is disclosed, Ghost Maintainer surfaces early warning indicators weeks before a compromise occurs — validated against real-world incidents including the [xz-utils backdoor (CVE-2024-3094)](https://nvd.nist.gov/vuln/detail/CVE-2024-3094), the [event-stream npm hijack](https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident), and the [ua-parser-js credential theft](https://github.com/nicolo-ribaudo/tc39-proposal-structs/issues/1).
+
+<p align="center">
+  <img src="docs/images/landing-hero.png" alt="Ghost Maintainer Platform Preview" width="100%" />
+</p>
 
 ---
 
@@ -82,6 +86,10 @@ Risk Score = 0.5 × Linguistic Score + 0.5 × Velocity Score
 
 ### Behavioral Signals
 
+<p align="center">
+  <img src="docs/images/behavioral-signals-sql.png" alt="Behavioral Signals Engine - Pure SQL In-Database Analytics" width="100%" />
+</p>
+
 | Signal | What it Detects |
 |---|---|
 | **Activity Drop** | Weekly commits and reviews falling below the 90-day moving average |
@@ -128,6 +136,10 @@ pip install -r requirements.txt
 
 ### Scan Any GitHub Repository
 
+<p align="center">
+  <img src="docs/images/cli-command-suite.png" alt="Ghost Maintainer CLI Command Suite" width="100%" />
+</p>
+
 Assess the supply chain risk of any public GitHub repository by passing `owner/repo`:
 
 ```bash
@@ -165,6 +177,10 @@ This outputs a table with risk scores and bands for each dependency, flagging an
 ### Run the Demo
 
 See pre-computed risk assessments for known supply chain incidents without any API calls:
+
+<p align="center">
+  <img src="docs/images/case-study-xz-utils.png" alt="Incident Case Study - xz-utils Supply Chain Attack Analysis" width="100%" />
+</p>
 
 ```bash
 npm run scan

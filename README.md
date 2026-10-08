@@ -22,35 +22,41 @@ Unlike dependency scanners that react after a vulnerability is disclosed, Ghost 
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Data Ingestion Layer                       │
-│         GitHub REST API → Python Fetcher / Next.js Worker       │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │ Raw JSON
-┌──────────────────────────────▼──────────────────────────────────┐
-│                    Storage & Database Layer                      │
-│           PostgreSQL (Supabase) / Snowflake VARIANT             │
-│                   ↓ Flattening Views ↓                          │
-└────────────┬─────────────────────────────────┬──────────────────┘
-             │                                 │
-┌────────────▼────────────┐   ┌────────────────▼─────────────────┐
-│   Linguistic Analysis   │   │     Behavioral Signal Engine     │
-│  Gemma 4B (Ollama /     │   │  Pure SQL Window Functions       │
-│  Snowflake Cortex AI)   │   │  Moving Averages, L₁ Drift,     │
-│  Score: 0–100           │   │  Z-Scores — Score: 0–100        │
-└────────────┬────────────┘   └────────────────┬─────────────────┘
-             │                                 │
-┌────────────▼─────────────────────────────────▼──────────────────┐
-│                     Combined Risk Index                          │
-│        Risk = 0.5 × Linguistic + 0.5 × Velocity                 │
-│        Low (0–33) · Medium (34–66) · High (67–100)              │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │
-┌──────────────────────────────▼──────────────────────────────────┐
-│                        User Interfaces                          │
-│    Web Dashboard  ·  CLI Scanner  ·  Dependency Triage          │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Ingestion ["Data Ingestion"]
+        GH["GitHub REST API"] --> FETCH["Python Fetcher / Next.js Worker"]
+    end
+
+    subgraph Storage ["Storage Layer"]
+        DB[("PostgreSQL / Supabase\nSnowflake VARIANT")]
+        FLAT["github_events_flat\nNormalization View"]
+        DB --> FLAT
+    end
+
+    subgraph Analytics ["Dual Analytics Engine"]
+        GEMMA["Linguistic Analysis\nGemma 4B · Ollama / Cortex AI\nScore: 0–100"]
+        SQL["Behavioral Signals\nSQL Window Functions\nScore: 0–100"]
+    end
+
+    subgraph Scoring ["Combined Risk Index"]
+        RISK["Risk = 0.5 × Linguistic + 0.5 × Velocity\nLow · Medium · High"]
+    end
+
+    subgraph Interfaces ["User Interfaces"]
+        DASH["Web Dashboard"]
+        CLI["CLI Scanner"]
+        TRIAGE["Dependency Triage"]
+    end
+
+    FETCH -->|"Raw JSON"| DB
+    FLAT -->|"Text & Comments"| GEMMA
+    FLAT -->|"Commit Metadata & Timestamps"| SQL
+    GEMMA --> RISK
+    SQL --> RISK
+    RISK --> DASH
+    RISK --> CLI
+    RISK --> TRIAGE
 ```
 
 For the full architecture specification, data flow diagrams, and mathematical definitions, see [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).

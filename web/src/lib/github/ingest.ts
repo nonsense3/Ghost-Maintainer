@@ -46,10 +46,18 @@ export async function collectRepositoryEvents(
   const since = sinceIso();
   const events: IngestEvent[] = [];
 
-  const commits = await paginate<{
+  let commits = await paginate<{
     sha: string;
     commit: { author: { date: string }; message: string };
   }>(`/repos/${owner}/${name}/commits?since=${since}`, 5, tokenOverride);
+
+  // Fallback: If no commits within 6 months, fetch recent repository commits
+  if (!commits.length) {
+    commits = await paginate<{
+      sha: string;
+      commit: { author: { date: string }; message: string };
+    }>(`/repos/${owner}/${name}/commits?per_page=50`, 2, tokenOverride);
+  }
 
   for (let i = 0; i < commits.length; i++) {
     const c = commits[i];
@@ -102,10 +110,14 @@ export async function collectRepositoryEvents(
     user: { login: string } | null;
     body: string | null;
     title: string;
-  }>(`/repos/${owner}/${name}/pulls?state=all&sort=updated&direction=desc`, 5, tokenOverride);
+  }>(`/repos/${owner}/${name}/pulls?state=all&sort=updated&direction=desc`, 3, tokenOverride);
 
-  for (const pr of pulls) {
-    if (new Date(pr.updated_at).getTime() < Date.now() - SIX_MONTHS_MS) continue;
+  let activePulls = pulls.filter((pr) => new Date(pr.updated_at).getTime() >= Date.now() - SIX_MONTHS_MS);
+  if (!activePulls.length && pulls.length > 0) {
+    activePulls = pulls.slice(0, 15);
+  }
+
+  for (const pr of activePulls) {
     events.push({
       source: "pr",
       external_id: String(pr.id),
@@ -123,13 +135,15 @@ export async function collectRepositoryEvents(
     user: { login: string } | null;
     body: string | null;
     title: string;
-  }>(`/repos/${owner}/${name}/issues?state=all&sort=updated&direction=desc`, 5, tokenOverride);
+  }>(`/repos/${owner}/${name}/issues?state=all&sort=updated&direction=desc`, 3, tokenOverride);
 
   const issueOnly = issues.filter((i) => !i.pull_request);
-  for (const issue of issueOnly) {
-    if (new Date(issue.updated_at).getTime() < Date.now() - SIX_MONTHS_MS) {
-      continue;
-    }
+  let activeIssues = issueOnly.filter((i) => new Date(i.updated_at).getTime() >= Date.now() - SIX_MONTHS_MS);
+  if (!activeIssues.length && issueOnly.length > 0) {
+    activeIssues = issueOnly.slice(0, 15);
+  }
+
+  for (const issue of activeIssues) {
     events.push({
       source: "issue",
       external_id: String(issue.id),

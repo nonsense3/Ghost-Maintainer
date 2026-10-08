@@ -3,6 +3,7 @@ export const instant = false;
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AddRepoForm } from "@/components/add-repo-form";
+import { TrackedRepoCard, RepoRiskData } from "@/components/tracked-repo-card";
 import { GlobalNav } from "@/components/global-nav";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
@@ -15,7 +16,8 @@ export default async function DashboardPage() {
   } | null = null;
   let repos: Array<{ id: string; full_name: string; created_at: string }> | null =
     null;
-  const riskByRepo = new Map<string, { risk_score: number; band: string }>();
+  const riskByRepo = new Map<string, RepoRiskData>();
+  const eventCountByRepo = new Map<string, number>();
 
   try {
     const supabase = await createClient();
@@ -38,7 +40,7 @@ export default async function DashboardPage() {
     const { data: latestRisk } = repoIds.length
       ? await supabase
           .from("risk_scores")
-          .select("repository_id, risk_score, band, week_start")
+          .select("repository_id, risk_score, band, linguistic_score, velocity_score, red_flags, week_start")
           .in("repository_id", repoIds)
           .order("week_start", { ascending: false })
       : { data: [] };
@@ -48,7 +50,22 @@ export default async function DashboardPage() {
         riskByRepo.set(row.repository_id, {
           risk_score: row.risk_score,
           band: row.band,
+          linguistic_score: row.linguistic_score,
+          velocity_score: row.velocity_score,
+          red_flags: row.red_flags,
         });
+      }
+    }
+
+    if (repoIds.length) {
+      const { data: eventsData } = await supabase
+        .from("raw_github_events")
+        .select("repository_id");
+      for (const ev of eventsData ?? []) {
+        eventCountByRepo.set(
+          ev.repository_id,
+          (eventCountByRepo.get(ev.repository_id) || 0) + 1,
+        );
       }
     }
   } catch (err: unknown) {
@@ -135,31 +152,15 @@ export default async function DashboardPage() {
             </h2>
             {repos && repos.length > 0 ? (
               <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {repos.map((repo) => {
-                  const risk = riskByRepo.get(repo.id);
-                  return (
-                    <li key={repo.id}>
-                      <Link
-                        href={`/dashboard/repos/${repo.id}`}
-                        className="store-utility-card block hover:border-primary transition-colors bg-canvas"
-                      >
-                        <p className="text-body-strong text-ink">
-                          {repo.full_name}
-                        </p>
-                        {risk ? (
-                          <p className="text-caption text-ink-muted-80 mt-2">
-                            Risk {risk.risk_score}{" "}
-                            <span className="capitalize">({risk.band})</span>
-                          </p>
-                        ) : (
-                          <p className="text-caption text-ink-muted-48 mt-2">
-                            Not analyzed yet
-                          </p>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {repos.map((repo) => (
+                  <li key={repo.id}>
+                    <TrackedRepoCard
+                      repo={repo}
+                      initialRisk={riskByRepo.get(repo.id)}
+                      eventCount={eventCountByRepo.get(repo.id)}
+                    />
+                  </li>
+                ))}
               </ul>
             ) : (
               <div className="p-8 rounded-2xl bg-canvas border border-hairline text-center">

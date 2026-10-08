@@ -53,11 +53,13 @@ export function AddRepoForm() {
   const [showModal, setShowModal] = useState(false);
   const [targetRepoName, setTargetRepoName] = useState("");
   const [ingestedRepoId, setIngestedRepoId] = useState<string | null>(null);
+  const [scanResult, setScanResult] = useState<{ risk_score: number; band: string } | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setStatus(null);
+    setScanResult(null);
 
     const target = resolveTarget();
     if (!target || !target.owner || !target.name) {
@@ -78,22 +80,28 @@ export function AddRepoForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setStatus(data.error ?? "Ingestion failed");
+        setStatus(data.error ?? "We could not access this repository. Please make sure it exists.");
         setShowModal(false);
         return;
       }
-      setStatus(`Ingested ${data.ingested_events} events for ${data.full_name}.`);
+
+      const count = data.ingested_events || 0;
+      if (count > 0) {
+        setStatus(`✓ Connected to ${data.full_name}. Ingested and audited ${count} code events.`);
+      } else {
+        setStatus(`✓ Connected to ${data.full_name}. Initialized repository tracking.`);
+      }
+
       setIngestedRepoId(data.repository_id);
+      if (data.analysis) {
+        setScanResult(data.analysis);
+      }
       setUrlInput("");
       setOwner("");
       setName("");
-
-      // Automatically trigger initial Gemma & SQL analysis in background
-      if (data.repository_id) {
-        fetch(`/api/repos/${data.repository_id}/analyze`, { method: "POST" }).catch(() => {});
-      }
+      router.refresh();
     } catch {
-      setStatus("Network connection error. Please try again.");
+      setStatus("Connection error. Please check your network and try again.");
       setShowModal(false);
     } finally {
       setLoading(false);
@@ -201,10 +209,10 @@ export function AddRepoForm() {
 
       {status && (
         <p
-          className={`text-caption p-3 rounded-xl border ${
-            status.startsWith("Ingested")
-              ? "text-emerald-800 bg-emerald-50 border-emerald-200"
-              : "text-red-700 bg-red-50 border-red-200"
+          className={`text-caption p-3.5 rounded-xl border ${
+            status.startsWith("✓") || status.startsWith("Connected")
+              ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20 font-medium font-sans"
+              : "text-red-300 bg-red-500/10 border-red-500/20 font-sans"
           }`}
           role="status"
         >
@@ -216,6 +224,7 @@ export function AddRepoForm() {
         isOpen={showModal}
         repoName={targetRepoName || "Repository"}
         onComplete={handleScanComplete}
+        resultScore={scanResult}
       />
     </form>
   );

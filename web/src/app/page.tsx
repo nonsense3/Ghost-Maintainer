@@ -69,7 +69,7 @@ export default function HomePage() {
         </section>
 
         {/* Live Sequential Scroller */}
-        <section className="w-full relative flex flex-col items-center py-8 bg-[#0c0c0c]/50 border-y border-zinc-900/50">
+        <section className="w-full relative flex flex-col items-center py-8 bg-transparent border-y border-zinc-800/40 backdrop-blur-[2px]">
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-widest mb-6 text-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             Monitors across your entire stack
           </p>
@@ -93,8 +93,8 @@ export default function HomePage() {
         </section>
 
         {/* Feature grid */}
-        <section className="w-full px-6 md:px-12 py-16 bg-[#0A0A0A]">
-          <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-0 rounded-2xl overflow-hidden border border-zinc-800/60 bg-zinc-900/30 divide-y md:divide-y-0 md:divide-x divide-zinc-800/60 shadow-2xl">
+        <section className="w-full px-6 md:px-12 py-16 bg-transparent">
+          <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-0 rounded-2xl overflow-hidden border border-zinc-800/60 bg-zinc-900/30 divide-y md:divide-y-0 md:divide-x divide-zinc-800/60 shadow-2xl backdrop-blur-md">
             <div className="p-8 md:p-12 flex flex-col gap-4 transition-colors hover:bg-zinc-800/20 group">
                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-colors">
                  <Shield className="w-6 h-6 text-indigo-400" />
@@ -120,11 +120,11 @@ export default function HomePage() {
         </section>
 
         {/* 3. Demo Comparison Section */}
-        <section id="demo" className="relative w-full px-6 md:px-12 py-24 bg-[#0c0c0c]">
+        <section id="demo" className="relative w-full px-6 md:px-12 py-24 bg-transparent">
           <div className="absolute inset-x-0 top-0 bg-gradient-to-r from-transparent via-zinc-800/50 to-transparent h-[1px]" />
           <div className="max-w-[1440px] mx-auto flex flex-col items-center">
             <div className="text-center max-w-3xl space-y-6 mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-400 uppercase tracking-widest mx-auto">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium text-zinc-400 uppercase tracking-widest mx-auto backdrop-blur-sm">
                 Case Study
               </div>
               <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-100">
@@ -135,18 +135,18 @@ export default function HomePage() {
                 xz-utils (CVE-2024-3094) before malicious code was even merged into the main branch.
               </p>
             </div>
-            <div className="w-full rounded-2xl border border-zinc-800/60 bg-[#0A0A0A] p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+            <div className="w-full rounded-2xl border border-zinc-800/60 bg-zinc-950/70 p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-md">
               <DemoComparison />
             </div>
           </div>
         </section>
 
         {/* 4. Dependency Scanner */}
-        <section id="scanner" className="relative w-full px-6 md:px-12 py-24 bg-[#0A0A0A]">
+        <section id="scanner" className="relative w-full px-6 md:px-12 py-24 bg-transparent">
           <div className="absolute inset-x-0 top-0 bg-gradient-to-r from-transparent via-zinc-800/50 to-transparent h-[1px]" />
           <div className="max-w-[1440px] mx-auto flex flex-col items-center">
             <div className="text-center max-w-3xl space-y-6 mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-400 uppercase tracking-widest mx-auto">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium text-zinc-400 uppercase tracking-widest mx-auto backdrop-blur-sm">
                 Deep Audit
               </div>
               <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-100">
@@ -158,18 +158,18 @@ export default function HomePage() {
                 by maintainer burnout and fragility.
               </p>
             </div>
-            <div className="w-full rounded-2xl border border-zinc-800/60 bg-[#0c0c0c] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div className="w-full rounded-2xl border border-zinc-800/60 bg-zinc-950/70 shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden backdrop-blur-md">
                <DependencyScannerCard />
             </div>
           </div>
         </section>
 
         {/* 5. SQL Engine Showcase */}
-        <section id="sql" className="relative w-full px-6 md:px-12 py-24 bg-[#0c0c0c]">
+        <section id="sql" className="relative w-full px-6 md:px-12 py-24 bg-transparent">
           <div className="absolute inset-x-0 top-0 bg-gradient-to-r from-transparent via-zinc-800/50 to-transparent h-[1px]" />
           <div className="max-w-[1440px] mx-auto flex flex-col items-center">
             <div className="text-center max-w-3xl space-y-6 mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-400 uppercase tracking-widest mx-auto">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-zinc-800 text-xs font-medium text-zinc-400 uppercase tracking-widest mx-auto backdrop-blur-sm">
                 In-Warehouse
               </div>
               <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-100">
@@ -181,7 +181,7 @@ export default function HomePage() {
                 code or credentials.
               </p>
             </div>
-            <div className="w-full rounded-2xl border border-zinc-800/60 overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] bg-[#0A0A0A]">
+            <div className="w-full rounded-2xl border border-zinc-800/60 overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)] bg-zinc-950/70 backdrop-blur-md">
               <SqlSignalsShowcase />
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function HomePage() {
       </main>
 
       {/* 6. Footer */}
-      <footer className="w-full border-t border-zinc-900 py-12 px-6 md:px-12 bg-[#0A0A0A] relative z-10">
+      <footer className="w-full border-t border-zinc-900/80 py-12 px-6 md:px-12 bg-transparent relative z-10">
         <div className="w-full flex flex-col md:flex-row items-center justify-between gap-8 text-sm text-zinc-500">
           <div className="text-center md:text-left">
             <p className="font-medium text-zinc-300 mb-1 flex items-center gap-2 justify-center md:justify-start">

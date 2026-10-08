@@ -2,7 +2,7 @@
 
 > **"Dependabot tells you after a bug is found. Ghost Maintainer warns you weeks before the package is compromised."**
 
-An AI security agent that scores open-source **maintainer burnout and hijack risk (0–100)** from public GitHub activity. Powered by **Gemma 2** linguistic analysis and pure **SQL window functions** over commit and issue telemetry.
+An AI security agent that scores open-source **maintainer burnout and hijack risk (0–100)** from public GitHub activity. Powered by **Gemma 4B** linguistic analysis and pure **SQL window functions** over commit and issue telemetry.
 
 Proven against real supply chain incidents including the **xz-utils backdoor (CVE-2024-3094)**, **event-stream npm hijack**, and **ua-parser-js credential theft**.
 
@@ -12,7 +12,7 @@ Proven against real supply chain incidents including the **xz-utils backdoor (CV
 
 | Track | Role in Ghost Maintainer | What Judges See |
 |---|---|---|
-| **Open Source AI & Gemma** | Gemma 2 evaluates maintainer exhaustion, coercion, sockpuppets, and takeover signs from comments and issue bodies. | Zero-egress, runs locally via Ollama / llama.cpp or inside Snowflake Cortex AI. Works 100% offline. |
+| **Open Source AI & Gemma** | Gemma 4B evaluates maintainer exhaustion, coercion, sockpuppets, and takeover signs from comments and issue bodies. | Zero-egress, runs locally via Ollama / llama.cpp or inside Snowflake Cortex AI. Works 100% offline. |
 | **GitHub Copilot** | Assisted development of statistical window functions, multi-source event fetchers, and Apple-spec responsive components. | Documented prompts and development velocity guide in [`docs/JUDGES_GUIDE.md`](./docs/JUDGES_GUIDE.md). |
 | **Snowflake & SQL Data Layer** | Raw JSON loaded directly into `VARIANT` / `jsonb`. Moving averages, L1 distribution drift, and Z-score deviation computed in pure SQL. | Complete DDL, views, and analytics queries in [`sql/`](./sql/). |
 
@@ -22,7 +22,7 @@ Proven against real supply chain incidents including the **xz-utils backdoor (CV
 
 $$\text{Risk Score} = 0.5 \times \text{Linguistic Score} + 0.5 \times \text{Velocity Score}$$
 
-- **Linguistic Score (0–100):** Average score across analyzed maintainer communications evaluated by Gemma 2.
+- **Linguistic Score (0–100):** Average score across analyzed maintainer communications evaluated by Gemma 4B.
 - **Velocity Score (0–100):** Composite index across the 5 behavioral signals.
 - **Risk Bands:** **Low** (0–33) · **Medium** (34–66) · **High** (67–100).
 

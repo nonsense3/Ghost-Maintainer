@@ -130,7 +130,7 @@ export default async function RepoDetailPage({ params }: Params) {
           <div className="store-utility-card grid sm:grid-cols-2 gap-4">
             <div>
               <p className="text-caption text-ink-muted-48">
-                Linguistic Component (Gemma 2)
+                Linguistic Component (Gemma 4B)
               </p>
               <p className="text-display-md text-ink">
                 {latest.linguistic_score}

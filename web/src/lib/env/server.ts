@@ -6,7 +6,7 @@ const serverEnvSchema = z.object({
   GITHUB_TOKEN: z.string().min(1).optional(),
   OLLAMA_HOST: z.string().url().default("http://127.0.0.1:11434"),
   OLLAMA_API_KEY: z.string().min(1).optional(),
-  GEMMA_MODEL: z.string().default("gemma4:31b-cloud"),
+  GEMMA_MODEL: z.string().default("gemma:4b"),
   GEMMA_API_KEY: z.string().min(1).optional(),
   GEMMA_API_BASE_URL: z.string().url().optional(),
 

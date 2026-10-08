@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import { DemoComparison } from "@/components/demo-comparison";
 import { DependencyScannerCard } from "@/components/dependency-scanner-card";
@@ -105,7 +105,7 @@ export default function HomePage() {
                  <Shield className="w-6 h-6 text-indigo-400" />
                </div>
                <h3 className="text-xl font-semibold text-zinc-100 mt-2">Linguistic Analysis</h3>
-               <p className="text-zinc-400 font-light leading-relaxed">Reads maintainer comms locally spotting exhaustion, coercion, and sudden style divergence using Gemma 2 LLM.</p>
+               <p className="text-zinc-400 font-light leading-relaxed">Reads maintainer comms locally spotting exhaustion, coercion, and sudden style divergence using Gemma 4B LLM.</p>
             </div>
             <div className="p-8 md:p-12 flex flex-col gap-4 transition-colors hover:bg-zinc-800/20 group">
                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 group-hover:bg-indigo-500/20 transition-colors">

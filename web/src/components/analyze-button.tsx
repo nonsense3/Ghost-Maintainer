@@ -40,7 +40,7 @@ export function AnalyzeButton({
         band: data.band,
       });
       setMessage(
-        `Risk Score: ${data.risk_score} (${data.band.toUpperCase()}) — Evaluated via Gemma 2 & SQL Behavior.`,
+        `Risk Score: ${data.risk_score} (${data.band.toUpperCase()}) — Evaluated via Gemma (4B) & SQL Behavior.`,
       );
     } catch {
       setMessage("Network error occurred during analysis.");
@@ -61,10 +61,10 @@ export function AnalyzeButton({
           type="button"
           onClick={run}
           disabled={loading}
-          className="btn-primary flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-indigo-500 to-indigo-600 text-white font-semibold py-2.5 px-6 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] border-0"
+          className="btn-primary flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-indigo-500 to-indigo-600 text-white font-semibold py-2.5 px-6 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] border-0 cursor-pointer"
         >
           <span className="text-base">⚡</span>
-          <span>{loading ? "Scanning Telemetry…" : "Run Security Analysis (Gemma 2 & Snowflake)"}</span>
+          <span>{loading ? "Scanning Telemetry…" : "Run Security Analysis (Gemma)"}</span>
         </button>
 
         {message && (

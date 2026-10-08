@@ -20,7 +20,7 @@ export function ExplainScorePanel({ rows }: { rows: ExplainRow[] }) {
             Linguistic Audit Breakdown
           </h3>
           <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 font-mono border border-indigo-500/20">
-            Gemma 2 · Track 1
+            Gemma 4B · Track 1
           </span>
         </div>
         <button
@@ -40,7 +40,7 @@ export function ExplainScorePanel({ rows }: { rows: ExplainRow[] }) {
                 No linguistic evaluations generated yet.
               </p>
               <p className="text-xs text-ink-muted-48">
-                Click &ldquo;Run analysis&rdquo; to execute the Gemma 2 linguistic model across GitHub comments, PR discussions, and commit messages.
+                Click &ldquo;Run Security Analysis&rdquo; to execute the Gemma 4B linguistic model across GitHub comments, PR discussions, and commit messages.
               </p>
             </div>
           ) : (

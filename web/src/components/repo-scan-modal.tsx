@@ -25,9 +25,9 @@ const STAGES = [
   },
   {
     id: 3,
-    title: "Gemma 2 Linguistic Semantic Audit",
+    title: "Gemma 4B Linguistic Semantic Audit",
     desc: "Evaluating maintainer burnout, coercive pressure & hostile takeover tone",
-    statusText: "Running Gemma 2 AI audit…",
+    statusText: "Running Gemma 4B AI audit…",
   },
   {
     id: 4,
@@ -88,7 +88,7 @@ export function RepoScanModal({
       setLogs((l) => [
         ...l,
         "[SQL] L1 hour-of-day distribution drift & new author velocity computed.",
-        "[GEMMA] Executing Gemma 2 linguistic model across comment and commit text…",
+        "[GEMMA] Executing Gemma 4B linguistic model across comment and commit text…",
       ]);
     }, 2500);
 

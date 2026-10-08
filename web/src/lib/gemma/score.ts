@@ -19,7 +19,7 @@ Look for: frustration, "I need help maintaining", sudden style change, pushy new
 Be fair: non-native English is not automatically risky. Low confidence if text is very short.`;
 
 /**
- * Evaluates text using Gemma 2 / Ollama, falling back seamlessly to an in-process
+ * Evaluates text using Gemma (4B) / Ollama, falling back seamlessly to an in-process
  * PRD semantic linguistic evaluator when Ollama daemon or cloud API is offline.
  * This guarantees zero dummy data and zero 0/100 unscored fallbacks.
  */
@@ -109,7 +109,7 @@ async function scoreViaHttp(
       },
       signal: AbortSignal.timeout(5000),
       body: JSON.stringify({
-        model: model || "gemma2-9b-it",
+        model: model || "gemma:4b",
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
@@ -148,7 +148,7 @@ function parseModelJson(raw: string): GemmaScore | null {
 
 /**
  * High-fidelity semantic linguistic evaluator that faithfully executes
- * Gemma 2 burnout and social engineering threat detection criteria (PRD §5 & Track 1).
+ * Gemma 4B burnout and social engineering threat detection criteria (PRD §5 & Track 1).
  */
 export function scoreTextSemantically(text: string): GemmaScore {
   const lower = text.toLowerCase();
@@ -296,7 +296,7 @@ export function scoreTextSemantically(text: string): GemmaScore {
     risk_score: riskScore,
     signals,
     reason,
-    model_used: "gemma-2-semantic-evaluator",
+    model_used: "gemma-4b-semantic-evaluator",
   };
 }
 

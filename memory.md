@@ -53,3 +53,4 @@ Last updated: 2026-10-07 (flagship update)
 1. Run `git push origin main` for newly created flagship features.
 2. User: optionally configure Supabase project + `web/.env.local` for custom private repository tracking.
 3. Install Ollama + `ollama pull gemma2:9b` for live offline linguistic scoring.
+

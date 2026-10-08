@@ -149,3 +149,4 @@ CREATE TABLE IF NOT EXISTS public.risk_scores (
     computed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (repository_id, week_start)
 );
+

@@ -155,3 +155,4 @@ create policy "Risk scores visible for owned repos"
   );
 
 -- Service role writes ingestion/scoring (no insert policies for anon/authenticated on raw events)
+

@@ -73,3 +73,4 @@ $$\text{Risk Score} = 0.5 \times \text{Linguistic Score} + 0.5 \times \text{Velo
 - **Snowflake (PRD Track 3):**
   - Zero-egress architecture: raw JSON stored directly in `VARIANT`.
   - In-database LLM completion via `SNOWFLAKE.CORTEX.COMPLETE('gemma-7b', ...)`.
+

@@ -292,8 +292,9 @@ export async function syncRepositoryToSnowflake(repositoryId: string) {
  */
 export function generateSnowflakeCopySql(repoFullName: string, sampleDataJson: string): string {
   const config = getSnowflakeConfig();
+  const safeRepo = repoFullName.replace(/[^a-zA-Z0-9_\-./]/g, "");
   return `-- ============================================================================
--- Snowflake Zero-Egress Ingestion Script for ${repoFullName}
+-- Snowflake Zero-Egress Ingestion Script for ${safeRepo}
 -- Target: ${config.database}.${config.schema} (Warehouse: ${config.warehouse})
 -- ============================================================================
 
@@ -328,8 +329,9 @@ WHERE r.full_name = '${repoFullName}';
  */
 export function generateSnowflakeAnalysisSql(repoFullName: string): string {
   const config = getSnowflakeConfig();
+  const safeRepo = repoFullName.replace(/[^a-zA-Z0-9_\-./]/g, "");
   return `-- ============================================================================
--- Snowflake Zero-Egress Analytics & Cortex AI Pipeline: ${repoFullName}
+-- Snowflake Zero-Egress Analytics & Cortex AI Pipeline: ${safeRepo}
 -- Database: ${config.database} | Schema: ${config.schema} | Warehouse: ${config.warehouse}
 -- ============================================================================
 

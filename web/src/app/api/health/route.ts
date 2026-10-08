@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import snowflake from "snowflake-sdk";
 
@@ -65,25 +65,23 @@ export async function GET() {
     snowflakeError = sErr instanceof Error ? sErr.message : String(sErr);
   }
 
+  const isDev = process.env.NODE_ENV !== "production";
+
   return NextResponse.json({
     ok: true,
     service: "ghost-maintainer-web",
+    status: supabaseOk && snowflakeOk ? "healthy" : "degraded",
     supabase: {
       connected: supabaseOk,
-      error: supabaseError,
-      usersSample: usersCount,
-      url: process.env.NEXT_PUBLIC_SUPABASE_URL || null,
+      error: isDev ? supabaseError : (supabaseError ? "Connection failed" : null),
       serviceKeyConfigured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
       anonKeyConfigured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
     },
     snowflake: {
       connected: snowflakeOk,
-      error: snowflakeError,
-      info: snowflakeInfo,
-      account: process.env.SNOWFLAKE_ACCOUNT,
-      warehouse: process.env.SNOWFLAKE_WAREHOUSE,
-      database: process.env.SNOWFLAKE_DATABASE,
-      schema: process.env.SNOWFLAKE_SCHEMA,
+      error: isDev ? snowflakeError : (snowflakeError ? "Connection failed" : null),
+      configured: Boolean(process.env.SNOWFLAKE_ACCOUNT && process.env.SNOWFLAKE_USER),
+      warehouse: process.env.SNOWFLAKE_WAREHOUSE || "COMPUTE_WH",
     },
   });
 }

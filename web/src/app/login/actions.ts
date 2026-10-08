@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -139,6 +139,10 @@ export async function signUpWithEmailAction(formData: FormData) {
  * Fallback Quick Maintainer Sign-in action (for local testing when GitHub OAuth client is not yet provisioned)
  */
 export async function quickMaintainerLoginAction(nextPath = "/dashboard") {
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_LOGIN !== "true") {
+    return { error: "Quick maintainer demo access is disabled in production. Please sign in with your email or GitHub." };
+  }
+
   const email = "nonsense3@users.noreply.github.com";
   const password = "Password123!";
   const { GITHUB_TOKEN } = getServerEnv();

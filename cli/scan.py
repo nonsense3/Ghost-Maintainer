@@ -194,7 +194,16 @@ def render_report(repo_name: str, linguistic_score: int, velocity_score: int, ri
 
 
 def cmd_scan(args):
-    owner, repo = args.target.split("/")
+    if "/" not in args.target:
+        print("\033[91m[-] Error: Target must be in 'owner/repo' format (e.g. pallets/flask).\033[0m", file=sys.stderr)
+        sys.exit(1)
+
+    owner, repo = args.target.strip().split("/", 1)
+    repo_regex = re.compile(r"^[a-zA-Z0-9_.-]+$")
+    if not repo_regex.match(owner) or not repo_regex.match(repo):
+        print("\033[91m[-] Error: Invalid owner or repository name. Only alphanumeric, hyphens, underscores, and periods are allowed.\033[0m", file=sys.stderr)
+        sys.exit(1)
+
     token = args.token or os.environ.get("GITHUB_TOKEN")
 
     print(f"[*] Ingesting GitHub activity for {owner}/{repo}...")

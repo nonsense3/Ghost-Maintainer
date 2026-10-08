@@ -3,7 +3,7 @@ export const instant = false;
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AnalyzeButton } from "@/components/analyze-button";
-import { ExplainScorePanel } from "@/components/explain-score-panel";
+import { ExplainScorePanel, ScoredAuditItem } from "@/components/explain-score-panel";
 import { GlobalNav } from "@/components/global-nav";
 import { RedFlagList } from "@/components/red-flag-list";
 import { RiskGauge } from "@/components/risk-gauge";
@@ -31,11 +31,7 @@ export default async function RepoDetailPage({ params }: Params) {
     score: number;
     detail: Record<string, unknown>;
   }> = [];
-  let commentScores: Array<{
-    risk_score: number;
-    reason: string;
-    signals: string[];
-  }> = [];
+  let auditItems: ScoredAuditItem[] = [];
 
   try {
     const supabase = await createClient();
@@ -74,11 +70,64 @@ export default async function RepoDetailPage({ params }: Params) {
 
     const { data: dbComments } = await supabase
       .from("comment_scores")
-      .select("risk_score, reason, signals")
+      .select("risk_score, reason, signals, event_id, model, scored_at")
       .eq("repository_id", id)
       .order("risk_score", { ascending: false })
-      .limit(12);
-    commentScores = (dbComments as typeof commentScores) ?? [];
+      .limit(16);
+
+    const eventIds = (dbComments ?? []).map((c) => c.event_id).filter(Boolean);
+    const { data: dbEvents } = eventIds.length
+      ? await supabase
+          .from("raw_github_events")
+          .select("id, source, external_id, occurred_at, payload")
+          .in("id", eventIds)
+      : { data: [] };
+
+    const eventMap = new Map((dbEvents ?? []).map((e) => [e.id, e]));
+
+    auditItems = (dbComments ?? []).map((c) => {
+      const ev = eventMap.get(c.event_id);
+      const payload = (ev?.payload ?? {}) as Record<string, unknown>;
+      const commit = payload.commit as { message?: string; author?: { name?: string } } | undefined;
+      const userObj = payload.user as { login?: string } | undefined;
+      const author =
+        (payload.author as { login?: string } | undefined)?.login ??
+        commit?.author?.name ??
+        userObj?.login ??
+        null;
+      const title = commit?.message
+        ? commit.message.split("\n")[0]
+        : ((payload.title as string) ?? (payload.body as string)?.slice(0, 80) ?? "Code update");
+      const files = (payload.files as Array<{
+        filename: string;
+        additions?: number;
+        deletions?: number;
+        status?: string;
+        patch?: string;
+      }>) ?? [];
+      const patch = files.find((f) => f.patch)?.patch ?? (typeof payload.body === "string" ? payload.body : null);
+      const htmlUrl =
+        (payload.html_url as string) ??
+        (ev?.source === "commit" && repo
+          ? `https://github.com/${repo.full_name}/commit/${ev.external_id}`
+          : null);
+
+      return {
+        event_id: c.event_id,
+        source: (ev?.source ?? "commit") as "commit" | "pr" | "issue" | "comment",
+        external_id: ev?.external_id ?? String(c.event_id),
+        author,
+        title,
+        occurred_at: ev?.occurred_at ?? c.scored_at ?? new Date().toISOString(),
+        files,
+        codeSnippet: patch,
+        html_url: htmlUrl,
+        risk_score: c.risk_score,
+        signals: (c.signals as string[]) ?? [],
+        reason: c.reason ?? "",
+        model: c.model ?? null,
+      };
+    });
   } catch (err: unknown) {
     if (err && typeof err === "object" && "digest" in err) {
       throw err;
@@ -165,11 +214,8 @@ export default async function RepoDetailPage({ params }: Params) {
         <div className="grid gap-6 lg:grid-cols-2">
           <RedFlagList flags={redFlags} />
           <ExplainScorePanel
-            rows={(commentScores ?? []).map((c) => ({
-              risk_score: c.risk_score,
-              reason: c.reason,
-              signals: c.signals as string[] | null,
-            }))}
+            items={auditItems}
+            repoFullName={repo.full_name}
           />
         </div>
 

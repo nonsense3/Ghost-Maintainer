@@ -51,12 +51,44 @@ export async function collectRepositoryEvents(
     commit: { author: { date: string }; message: string };
   }>(`/repos/${owner}/${name}/commits?since=${since}`, 5, tokenOverride);
 
-  for (const c of commits) {
+  for (let i = 0; i < commits.length; i++) {
+    const c = commits[i];
+    let payload = c as unknown as Record<string, unknown>;
+
+    // For the most recent 10 commits, fetch file changes & diff patches for code-level security scan
+    if (i < 10) {
+      try {
+        const detail = await githubFetch<{
+          files?: Array<{
+            filename: string;
+            status?: string;
+            additions?: number;
+            deletions?: number;
+            patch?: string;
+          }>;
+        }>(`/repos/${owner}/${name}/commits/${c.sha}`, undefined, tokenOverride);
+        if (detail?.files && detail.files.length > 0) {
+          payload = {
+            ...payload,
+            files: detail.files.slice(0, 10).map((f) => ({
+              filename: f.filename,
+              status: f.status,
+              additions: f.additions,
+              deletions: f.deletions,
+              patch: f.patch ? f.patch.slice(0, 2000) : undefined,
+            })),
+          };
+        }
+      } catch {
+        // Fallback to commit metadata if detail call fails or hits rate limits
+      }
+    }
+
     events.push({
       source: "commit",
       external_id: c.sha,
       occurred_at: c.commit.author.date,
-      payload: c as unknown as Record<string, unknown>,
+      payload,
     });
   }
 

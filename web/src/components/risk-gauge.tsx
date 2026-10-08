@@ -9,7 +9,7 @@ export function RiskGauge({
     band === "high"
       ? "#cc3300"
       : band === "medium"
-        ? "#996600"
+        ? "#ea580c"
         : "var(--color-primary)";
 
   return (

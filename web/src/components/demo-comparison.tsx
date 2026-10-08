@@ -170,7 +170,7 @@ export function DemoComparison() {
     scenario.band === "high"
       ? "#ef4444" // red-500
       : scenario.band === "medium"
-        ? "#f59e0b" // amber-500
+        ? "#f97316" // orange-500
         : "#10b981"; // emerald-500
 
   return (

@@ -39,7 +39,7 @@ export function RedFlagList({ flags }: { flags: Flag[] }) {
           const isHigh = f.risk_score >= 70;
           const badgeClass = isHigh
             ? "text-red-400 bg-red-500/10 border-red-500/20"
-            : "text-amber-400 bg-amber-500/10 border-amber-500/20";
+            : "text-orange-400 bg-orange-500/10 border-orange-500/20";
 
           return (
             <li

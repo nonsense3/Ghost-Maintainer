@@ -266,8 +266,8 @@ GEMMA_MODEL=gemma:4b`}
                 Healthy maintainer activity, distributed contributions, automated CI/CD checks, and responsive issue handling.
               </p>
             </div>
-            <div className="p-6 rounded-xl bg-amber-500/5 border border-amber-500/20">
-              <div className="text-amber-400 font-bold text-lg mb-1">34 – 66: MEDIUM RISK</div>
+            <div className="p-6 rounded-xl bg-orange-500/5 border border-orange-500/20">
+              <div className="text-orange-400 font-bold text-lg mb-1">34 – 66: MEDIUM RISK</div>
               <p className="text-xs text-zinc-400">
                 Single-maintainer bottleneck, rising issue reply latency, or minor author contribution shifts.
               </p>

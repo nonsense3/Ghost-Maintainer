@@ -52,7 +52,7 @@ const banner = `
 
 function renderReport(repoName, linguisticScore, velocityScore, riskScore, signals, redFlags) {
   const band = riskScore <= 33 ? "LOW" : riskScore <= 66 ? "MEDIUM" : "HIGH";
-  const color = band === "LOW" ? "\x1b[32m" : band === "MEDIUM" ? "\x1b[33m" : "\x1b[31m";
+  const color = band === "LOW" ? "\x1b[32m" : band === "MEDIUM" ? "\x1b[38;5;208m" : "\x1b[31m";
   const reset = "\x1b[0m";
 
   console.log(`\n================================================================================`);
@@ -64,7 +64,7 @@ function renderReport(repoName, linguisticScore, velocityScore, riskScore, signa
   console.log(` BEHAVIORAL SIGNALS (SQL / Git Activity):`);
   for (const [key, val] of Object.entries(signals)) {
     const bar = "█".repeat(Math.floor(val / 5)) + "░".repeat(20 - Math.floor(val / 5));
-    const sigColor = val >= 50 ? "\x1b[31m" : val >= 25 ? "\x1b[33m" : "\x1b[32m";
+    const sigColor = val >= 50 ? "\x1b[31m" : val >= 25 ? "\x1b[38;5;208m" : "\x1b[32m";
     const label = key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     console.log(`   • ${label.padEnd(24)} [${sigColor}${bar}${reset}] ${String(val).padStart(3)}/100`);
   }
@@ -297,7 +297,7 @@ function scanDeps(filePath) {
     ];
     if (score > 33 && !knownDb[dep]) band = "MEDIUM";
 
-    const color = band === "LOW" ? "\x1b[32m" : band === "MEDIUM" ? "\x1b[33m" : "\x1b[31m";
+    const color = band === "LOW" ? "\x1b[32m" : band === "MEDIUM" ? "\x1b[38;5;208m" : "\x1b[31m";
     const reset = "\x1b[0m";
     console.log(
       `${dep.padEnd(28)} ${color}${String(score).padStart(3)}/100${reset}     ${color}${band.padEnd(10)}${reset} ${desc}`

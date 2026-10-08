@@ -104,7 +104,7 @@ export function ExplainScorePanel({
     if (signals.includes("owasp_a03_injection_vector")) {
       return {
         label: "⚠️ OWASP A03 Injection Vector",
-        className: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+        className: "bg-orange-500/15 text-orange-400 border-orange-500/30",
       };
     }
     if (signals.includes("owasp_a07_verified")) {
@@ -200,7 +200,7 @@ export function ExplainScorePanel({
                 const badgeColor = isHigh
                   ? "text-red-400 bg-red-500/10 border-red-500/30"
                   : isMed
-                  ? "text-amber-400 bg-amber-500/10 border-amber-500/30"
+                  ? "text-orange-400 bg-orange-500/10 border-orange-500/30"
                   : "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
 
                 const cveBadge = getCveBadge(item.signals);

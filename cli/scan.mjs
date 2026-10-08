@@ -98,12 +98,70 @@ async function githubFetch(url, token) {
   return res.json();
 }
 
+function parseRepoSlug(input) {
+  if (!input) return null;
+  let clean = input.trim().replace(/\.git$/i, "");
+  const urlMatch = clean.match(/github\.com[/:]([^/\s]+)\/([^/\s#?]+)/i);
+  if (urlMatch) {
+    return { owner: urlMatch[1], name: urlMatch[2] };
+  }
+  const parts = clean.split("/").filter(Boolean);
+  if (parts.length === 2) {
+    return { owner: parts[0], name: parts[1] };
+  }
+  return null;
+}
+
+async function scoreWithGemmaCloud(text) {
+  const apiKey = process.env.GEMMA_API_KEY;
+  const baseUrl = process.env.GEMMA_API_BASE_URL || "https://generativelanguage.googleapis.com/v1beta/openai";
+  const model = process.env.GEMMA_MODEL || "gemma-4-26b-a4b-it";
+  if (!apiKey) {
+    return null;
+  }
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      signal: AbortSignal.timeout(25000),
+      body: JSON.stringify({
+        model,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: `You are a security audit agent assessing open-source code commits and discussions for supply chain and maintainer risks. Output valid JSON only: {"risk_score": 0-100, "signals": ["..."], "reason": "Detailed 1-2 sentence security explanation"}`,
+          },
+          { role: "user", content: text.slice(0, 4000) },
+        ],
+      }),
+    });
+    if (!res.ok) {
+      return null;
+    }
+    const data = await res.json();
+    const raw = data.choices?.[0]?.message?.content || "";
+    const cleaned = raw.replace(/<thought>[\s\S]*?<\/thought>/gi, "").replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) {
+      return JSON.parse(match[0]);
+    }
+    return JSON.parse(cleaned);
+  } catch (err) {
+    return null;
+  }
+}
+
 async function scanRepo(repoSlug, token) {
-  const [owner, name] = repoSlug.split("/");
-  if (!owner || !name) {
-    console.error("[-] Invalid repo format. Use <owner>/<repo>, e.g. pallets/flask or nonsense3/Ghost-Maintainer");
+  const parsed = parseRepoSlug(repoSlug);
+  if (!parsed) {
+    console.error("[-] Invalid repo format. Use <owner>/<repo> or GitHub URL, e.g. pallets/flask or https://github.com/nonsense3/Cinenext-2025.git");
     process.exit(1);
   }
+  const { owner, name } = parsed;
 
   console.log(`\n[*] Fetching repository metadata for \x1b[1m${owner}/${name}\x1b[0m...`);
   const meta = await githubFetch(`https://api.github.com/repos/${owner}/${name}`, token);
@@ -123,6 +181,26 @@ async function scanRepo(repoSlug, token) {
 
   // 2. Linguistic scoring (heuristic keywords & comments)
   const redFlags = extractLinguisticFlags(issues, pulls);
+
+  // 3. Gemma 4B Cloud Linguistic Scoring (if API key provided)
+  const gemmaSample = [
+    ...commits.slice(0, 5).map((c) => `Commit ${c.sha?.slice(0, 7)}: ${c.commit?.message}`),
+    ...issues.slice(0, 5).map((i) => `Issue: ${i.title} - ${(i.body || "").slice(0, 200)}`),
+  ].join("\n");
+  if (gemmaSample.trim()) {
+    process.stdout.write("[*] Auditing commit & issue signals with Gemma 4B AI... ");
+    const gemmaRes = await scoreWithGemmaCloud(gemmaSample);
+    if (gemmaRes) {
+      process.stdout.write("\x1b[32m[Active]\x1b[0m\n");
+      redFlags.push({
+        risk_score: gemmaRes.risk_score ?? 10,
+        signals: gemmaRes.signals || ["gemma_4b_audit"],
+        reason: gemmaRes.reason || "Audited commit messages and issues with Gemma 4B model.",
+      });
+    } else {
+      process.stdout.write("\x1b[90m[Heuristic Fallback]\x1b[0m\n");
+    }
+  }
 
   const linguisticScore = redFlags.length
     ? Math.round(redFlags.reduce((a, b) => a + b.risk_score, 0) / redFlags.length)

@@ -149,9 +149,9 @@ async function scoreViaHttp(
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      signal: AbortSignal.timeout(4000),
+      signal: AbortSignal.timeout(25000),
       body: JSON.stringify({
-        model: model || "gemma:4b",
+        model: model || "gemma-4-26b-a4b-it",
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
@@ -170,12 +170,13 @@ async function scoreViaHttp(
 }
 
 function parseModelJson(raw: string): GemmaScore | null {
+  const cleaned = (raw || "").replace(/<thought>[\s\S]*?<\/thought>/gi, "").trim();
   try {
-    const json = JSON.parse(raw) as unknown;
+    const json = JSON.parse(cleaned) as unknown;
     const parsed = scoreSchema.safeParse(json);
     if (parsed.success) return parsed.data;
   } catch {
-    const match = raw.match(/\{[\s\S]*\}/);
+    const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) {
       try {
         const parsed = scoreSchema.safeParse(JSON.parse(match[0]));
